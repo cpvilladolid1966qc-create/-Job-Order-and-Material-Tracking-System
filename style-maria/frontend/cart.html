@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart — Style Maria Workshop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="sm-page">
+    <h1 class="sm-title">Your Cart</h1>
+    <div class="two-col">
+      <div class="sm-card">
+        <div id="alert-slot"></div>
+        <div id="cart-items" data-testid="cart-items"></div>
+        <div id="empty" style="display:none; text-align:center; padding: 30px 0;">
+          <p class="sm-sub">Your cart is empty.</p>
+          <a href="order.html" class="btn btn-ghost" data-testid="go-order">Create an order</a>
+        </div>
+      </div>
+      <div>
+        <div class="summary">
+          <h3>Delivery Address</h3>
+          <label>Recipient name</label>
+          <input type="text" id="a-name" data-testid="addr-name">
+          <div class="spacer" style="height:12px"></div>
+          <label>Mobile number</label>
+          <input type="text" id="a-phone" placeholder="09XX XXX XXXX" data-testid="addr-phone">
+          <div class="spacer" style="height:12px"></div>
+          <label>House no. / Street / Barangay</label>
+          <input type="text" id="a-street" data-testid="addr-street">
+          <div class="spacer" style="height:12px"></div>
+          <div class="input-row">
+            <div><label>City / Municipality</label><input type="text" id="a-city" data-testid="addr-city"></div>
+            <div><label>Province</label><input type="text" id="a-province" data-testid="addr-province"></div>
+          </div>
+          <div class="spacer" style="height:12px"></div>
+          <label>Delivery area</label>
+          <select id="a-area" data-testid="addr-area"></select>
+        </div>
+        <div class="spacer"></div>
+        <div class="summary">
+          <h3>Order Summary</h3>
+          <div class="row"><span>Subtotal</span><span id="s-subtotal" data-testid="s-subtotal">₱0.00</span></div>
+          <div class="row"><span>Delivery Fee</span><span id="s-delivery" data-testid="s-delivery">₱0.00</span></div>
+          <div class="row total"><span>Total Price</span><span id="s-total" data-testid="s-total">₱0.00</span></div>
+          <div class="spacer"></div>
+          <button class="btn btn-primary btn-block" id="checkout-btn" data-testid="checkout-btn">Proceed to Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script>
+    const user = requireAuth();
+    if (user) renderHeader('cart');
+    const alertSlot = document.getElementById('alert-slot');
+
+    let areas = {};
+    let lastData = null;
+
+    async function load() {
+      areas = await api('/delivery-areas');
+      const sel = document.getElementById('a-area');
+      sel.innerHTML = Object.entries(areas).map(([k, v]) => `<option value="${k}">${k} — ${peso(v)}</option>`).join('');
+      sel.onchange = () => lastData && render(lastData);
+      if (user) document.getElementById('a-name').value = user.fullName || '';
+      const data = await api('/cart');
+      render(data);
+    }
+    function render(data) {
+      lastData = data;
+      const items = data.items || [];
+      const fee = items.length ? parseFloat(areas[document.getElementById('a-area').value] || 0) : 0;
+      data = Object.assign({}, data, { deliveryFee: fee, total: parseFloat(data.subtotal) + fee });
+      const box = document.getElementById('cart-items');
+      const empty = document.getElementById('empty');
+      document.getElementById('s-subtotal').textContent = peso(data.subtotal);
+      document.getElementById('s-delivery').textContent = peso(data.deliveryFee);
+      document.getElementById('s-total').textContent = peso(data.total);
+      if (!items.length) {
+        box.innerHTML = ''; empty.style.display = 'block';
+        document.getElementById('checkout-btn').disabled = true;
+        return;
+      }
+      empty.style.display = 'none';
+      document.getElementById('checkout-btn').disabled = false;
+      box.innerHTML = items.map(it => `
+        <div class="cart-item" data-testid="cart-row-${it.id}">
+          <img src="${it.referenceImage ? UPLOAD_BASE + it.referenceImage : 'images/mirror-placeholder.svg'}" alt="">
+          <div>
+            <div class="desc">Custom ${it.frameMaterial} Frame<br/>
+              ${it.length} × ${it.width} cm</div>
+            <div class="qty-ctl">
+              <button data-id="${it.id}" data-delta="-1" data-testid="qty-dec-${it.id}">−</button>
+              <span data-testid="qty-val-${it.id}">${it.quantity}</span>
+              <button data-id="${it.id}" data-delta="1" data-testid="qty-inc-${it.id}">+</button>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="price" data-testid="price-${it.id}">${peso(parseFloat(it.unitPrice) * it.quantity)}</div>
+            <button class="btn-danger" data-remove="${it.id}" data-testid="remove-${it.id}" title="Remove">🗑</button>
+          </div>
+        </div>
+      `).join('');
+
+      box.querySelectorAll('button[data-id]').forEach(b => {
+        b.onclick = async () => {
+          const id = b.dataset.id;
+          const delta = parseInt(b.dataset.delta);
+          const row = lastData.items.find(x => x.id == id);
+          const newQty = Math.max(1, row.quantity + delta);
+          try {
+            const data = await api('/cart/' + id, { method: 'PUT', body: { quantity: newQty } });
+            render(data);
+          } catch (e) { showAlert(alertSlot, e.message); }
+        };
+      });
+      box.querySelectorAll('button[data-remove]').forEach(b => {
+        b.onclick = async () => {
+          try {
+            const data = await api('/cart/' + b.dataset.remove, { method: 'DELETE' });
+            render(data);
+          } catch (e) { showAlert(alertSlot, e.message); }
+        };
+      });
+    }
+
+    document.getElementById('checkout-btn').onclick = async () => {
+      try {
+        const v = id => document.getElementById(id).value.trim();
+        const o = await api('/orders/checkout', { method: 'POST', body: {
+          recipientName: v('a-name'), phone: v('a-phone'), street: v('a-street'),
+          city: v('a-city'), province: v('a-province'), deliveryArea: v('a-area')
+        }});
+        localStorage.setItem('sm_last_ref', o.reference);
+        window.location.href = 'checkout.html?ref=' + encodeURIComponent(o.reference);
+      } catch (e) { showAlert(alertSlot, e.message); }
+    };
+
+    load().catch(e => showAlert(alertSlot, e.message));
+  </script>
+</body>
+</html>

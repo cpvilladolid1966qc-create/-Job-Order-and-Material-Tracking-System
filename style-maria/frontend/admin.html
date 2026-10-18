@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin — Style Maria Workshop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="sm-page">
+    <h1 class="sm-title">Admin Dashboard</h1>
+    <p class="sm-sub">Manage orders, verify payments, and update your payment QR.</p>
+
+    <div class="sm-card" style="margin-bottom:24px;">
+      <div id="alert-slot"></div>
+      <h3 class="serif" style="margin: 0 0 14px;">Payment QR Code</h3>
+      <div style="display:flex; gap:24px; align-items:center;">
+        <img id="qr-current" src="images/qr-placeholder.svg" alt="QR" style="width:140px;height:140px;border:1px solid var(--line);border-radius:8px;background:#fff;" data-testid="qr-current">
+        <div>
+          <p class="small" style="margin:0 0 8px;">Upload a new QR image used on checkout.</p>
+          <input type="file" id="qr-file" accept="image/*" data-testid="qr-file-input">
+          <div class="spacer"></div>
+          <button class="btn btn-primary" id="qr-upload-btn" data-testid="qr-upload-btn">Update QR</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sm-card">
+      <h3 class="serif" style="margin: 0 0 14px;">Orders</h3>
+      <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+        <input type="text" id="f-q" placeholder="Search reference, customer name or email" style="flex:1; min-width:240px;" data-testid="admin-search-input">
+        <select id="f-status" style="width:220px;" data-testid="admin-status-filter">
+          <option value="">All statuses</option>
+          <option value="AWAITING_VERIFICATION">Receipts awaiting check</option>
+          <option value="PENDING_PAYMENT">Pending payment</option>
+          <option value="PENDING">Pending</option>
+          <option value="IN_PRODUCTION">In production</option>
+          <option value="SCHEDULED">Scheduled</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+      </div>
+      <div class="small" id="f-count" style="margin-bottom:8px;" data-testid="admin-order-count"></div>
+      <div style="overflow-x:auto;">
+        <table class="sm-table" id="orders-table">
+          <thead>
+            <tr>
+              <th>Reference</th><th>Customer</th><th>Items</th><th>Total</th><th>Receipt</th><th>Status</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody data-testid="orders-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/common.js"></script>
+  <script>
+    const user = requireAuth();
+    if (user && user.role !== 'ADMIN') { window.location.href = 'order.html'; }
+    renderHeader('admin');
+    const alertSlot = document.getElementById('alert-slot');
+
+    const STATUSES = ['PENDING', 'IN_PRODUCTION', 'SCHEDULED', 'COMPLETED', 'REJECTED'];
+
+    async function loadQr() {
+      try {
+        const q = await api('/admin/settings/qr');
+        const url = q.url.startsWith('http') || q.url.startsWith('/images/') ? q.url : UPLOAD_BASE + q.url;
+        document.getElementById('qr-current').src = url;
+      } catch (e) {}
+    }
+    document.getElementById('qr-upload-btn').onclick = async () => {
+      const f = document.getElementById('qr-file').files[0];
+      if (!f) { showAlert(alertSlot, 'Choose an image first'); return; }
+      try {
+        const r = await apiUpload(f);
+        await api('/admin/settings/qr', { method: 'PUT', body: { url: r.url } });
+        showAlert(alertSlot, 'QR updated', 'success');
+        loadQr();
+      } catch (e) { showAlert(alertSlot, e.message); }
+    };
+
+    async function loadOrders() {
+      const q = encodeURIComponent(document.getElementById('f-q').value.trim());
+      const st = encodeURIComponent(document.getElementById('f-status').value);
+      const data = await api(`/admin/orders?q=${q}&status=${st}`);
+      document.getElementById('f-count').textContent = data.length + ' order(s)';
+      const tbody = document.querySelector('#orders-table tbody');
+      if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;" class="small">No orders yet.</td></tr>'; return; }
+      tbody.innerHTML = data.map(entry => {
+        const o = entry.order;
+        const cust = entry.customer || { fullName: '—', email: '' };
+        const itemsDesc = (o.items || []).map(i => `${i.frameMaterial} ${i.length}×${i.width}cm ×${i.quantity}`).join('<br/>');
+        const receipt = o.receiptImage
+          ? `<a href="${UPLOAD_BASE + o.receiptImage}" target="_blank" class="link" data-testid="receipt-link-${o.reference}">View</a>`
+          : '<span class="small">—</span>';
+        const options = STATUSES.map(s => `<option value="${s}" ${o.status===s?'selected':''}>${s.replace(/_/g,' ')}</option>`).join('');
+        return `<tr data-testid="order-row-${o.reference}">
+          <td><strong>${o.reference}</strong><div class="small">${new Date(o.createdAt).toLocaleString()}</div></td>
+          <td>${cust.fullName}<div class="small">${cust.email}</div>
+            ${o.street ? `<div class="small" style="margin-top:4px;">${o.recipientName} · ${o.phone}<br/>${o.street}, ${o.city}, ${o.province}<br/>${o.deliveryArea}</div>` : ''}</td>
+          <td class="small">${itemsDesc}</td>
+          <td>${peso(o.total)}</td>
+          <td>${receipt}</td>
+          <td><span class="badge badge-${o.status}">${o.status.replace(/_/g,' ')}</span></td>
+          <td>
+            <select data-ref="${o.reference}" data-testid="status-select-${o.reference}" style="width:160px;">${options}</select>
+            <button class="btn btn-ghost" style="padding:6px 12px;margin-top:6px;" data-save="${o.reference}" data-testid="status-save-${o.reference}">Save</button>
+          </td>
+        </tr>`;
+      }).join('');
+
+      tbody.querySelectorAll('button[data-save]').forEach(b => {
+        b.onclick = async () => {
+          const ref = b.dataset.save;
+          const sel = tbody.querySelector(`select[data-ref="${ref}"]`);
+          try {
+            await api('/admin/orders/' + encodeURIComponent(ref) + '/status', {
+              method: 'PUT', body: { status: sel.value }
+            });
+            showAlert(alertSlot, 'Status updated for ' + ref, 'success');
+            loadOrders();
+          } catch (e) { showAlert(alertSlot, e.message); }
+        };
+      });
+    }
+
+    let searchTimer;
+    document.getElementById('f-q').addEventListener('input', () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => loadOrders().catch(e => showAlert(alertSlot, e.message)), 300);
+    });
+    document.getElementById('f-status').onchange = () => loadOrders().catch(e => showAlert(alertSlot, e.message));
+
+    loadQr();
+    loadOrders().catch(e => showAlert(alertSlot, e.message));
+  </script>
+</body>
+</html>
