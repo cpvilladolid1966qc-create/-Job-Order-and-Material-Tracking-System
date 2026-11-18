@@ -1,0 +1,6 @@
+## [t5] Implemented secure inventory, staff, and order workflows
+- Codebase/domain discoveries: existing customer custom-order/payment routes are separate from the new operational POS order flow; preserve that distinction. Upstream persistence schema did not define POS tables or an invite display name, so additive DDL was needed.
+- Wrong assumptions and corrections: the Maven wrapper resolved Java 25.0.5 although the standalone shell `java` command resolves 21.0.12; tests correctly ran on the wrapper runtime without forcing the shell JDK.
+- Debugging dead-ends and what actually worked: H2 rejects some boolean CHECK formulations; use the CASE-based movement kind/direction invariant. A movement-audit CHECK constraint reliably forced an audit insert failure and proved transaction rollback of both the balance update and ledger insert.
+- Techniques/patterns worth reusing: resolve actor identity and role from the server session; row-lock balance rows; place ledger and audit writes inside the same transaction; distinguish quote-based payment submissions from demo/unquoted submissions before allowing admin verification.
+- Learnings consumed: none — no backend learning files existed at task start.

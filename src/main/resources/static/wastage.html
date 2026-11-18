@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#50512a">
+    <title>Wastage Log | Style Maria</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/api-client.js?v=wastage-catalog-20261104" defer></script>
+    <script src="/js/store.js?v=workshop-profile-settings-20261105" defer></script>
+</head>
+<body class="admin-dashboard wastage-page">
+<header class="workshop-header">
+    <a class="workshop-brand" href="/admin.html" aria-label="Style Maria dashboard">
+        <span class="workshop-logo">SM</span>
+        <span class="workshop-brand-name">STYLE MARIA</span>
+    </a>
+
+    <button class="workshop-menu-button" type="button" aria-label="Open navigation"
+            aria-expanded="false" aria-controls="workshop-navigation">
+        <span></span><span></span><span></span>
+    </button>
+
+    <nav class="workshop-navigation" id="workshop-navigation" aria-label="Admin navigation">
+        <a class="workshop-nav-link" href="/admin.html"><svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg> Dashboard</a>
+        <a class="workshop-nav-link" href="/inventory.html"><svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9"/></svg> Inventory</a>
+        <a class="workshop-nav-link" href="/reports.html"><svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7"/></svg> Reports</a>
+        <a class="workshop-nav-link is-active" href="/wastage.html" aria-current="page"><svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10.3 4.4 2.8 18a1.5 1.5 0 0 0 1.3 2.2h15.8a1.5 1.5 0 0 0 1.3-2.2L13.7 4.4a1.9 1.9 0 0 0-3.4 0Z"/><path d="M12 9v4m0 3h.01"/></svg> Wastage</a>
+        <a class="workshop-nav-link" href="/auto-bom.html"><svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg> Auto-BOM</a>
+        <a class="workshop-nav-link" href="/pos.html"><svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg> POS</a>
+        <a class="workshop-nav-link" href="/Custom-req.html"><svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v6h6M9 13h6m-6 4h6"/></svg> Custom Requests</a>
+    </nav>
+
+    <div class="account-menu">
+        <button class="workshop-account account-menu-trigger" id="account-menu-trigger"
+                type="button" aria-expanded="false" aria-controls="account-menu">
+            <span class="account-avatar" data-workshop-account-avatar aria-hidden="true">A</span>
+            <span data-workshop-account-name>Admin</span>
+            <span class="account-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="account-menu-panel" id="account-menu" hidden>
+            <div class="account-menu-heading">
+                <strong data-workshop-account-title>Admin Account</strong>
+                <span>Manage your account</span>
+            </div>
+            <p class="account-menu-message" id="profile-settings-feedback" role="status" aria-live="polite" hidden></p>
+            <button class="account-menu-item" id="profile-settings" type="button">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M5 21a7 7 0 0 1 14 0"></path></svg>
+                <span>Profile Settings</span>
+            </button>
+            <a class="account-menu-item account-logout-item" href="/logout">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3"></path><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path></svg>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<main class="content wastage-content">
+    <section class="welcome-row wastage-welcome" aria-labelledby="page-title">
+        <div>
+            <p class="wastage-eyebrow">WASTAGE LOG</p>
+            <h1 id="page-title">Wastage Log</h1>
+            <p>Record and track material wastage incidents and their impact</p>
+        </div>
+        <span class="wastage-date">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <path d="M16 3v4M8 3v4M3 10h18"></path>
+            </svg>
+            <time id="today-date"></time>
+        </span>
+    </section>
+
+    <div class="wastage-layout">
+        <section class="panel wastage-form-panel" aria-labelledby="incident-title">
+            <h2 class="wastage-section-title" id="incident-title">Incident details</h2>
+            <form id="wastage-form">
+                <div class="wastage-fields wastage-incident-fields">
+                    <div class="wastage-field">
+                        <label for="order-id">Order ID</label>
+                        <input id="order-id" name="orderId" type="text" value="" required>
+                    </div>
+                    <div class="wastage-field">
+                        <label for="material">Material</label>
+                        <select id="material" name="materialId" required disabled>
+                            <option value="">Loading active inventory materials…</option>
+                        </select>
+                        <p id="wastage-material-state" class="wastage-feedback" role="status" aria-live="polite">
+                            Loading active inventory materials…
+                        </p>
+                    </div>
+                    <div class="wastage-field wastage-description">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="3" placeholder="(Optional)"></textarea>
+                    </div>
+                    <div class="wastage-field">
+                        <label for="reason">Reason</label>
+                        <select id="reason" name="reason" required>
+                            <option>Glass/Mirror Breakage</option>
+                            <option>Cutting Error</option>
+                            <option>Material Defect</option>
+                            <option>Damaged in Handling</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="wastage-field">
+                        <label for="action-taken">Action taken</label>
+                        <select id="action-taken" name="actionTaken" required>
+                            <option>Replaced from current stock</option>
+                            <option>Returned to supplier</option>
+                            <option>Reused / salvaged</option>
+                            <option>Disposed</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="wastage-field wastage-quantity-field">
+                        <label for="quantity">Quantity wasted + unit</label>
+                        <div class="wastage-quantity">
+                            <input id="quantity" name="quantity" type="number" min="0" step="1" value="3" required aria-label="Whole quantity">
+                            <select id="quantity-fraction" aria-label="Quantity fraction">
+                                <option value="0">0</option>
+                                <option value="0.125" selected>1/8</option>
+                                <option value="0.25">1/4</option>
+                                <option value="0.375">3/8</option>
+                                <option value="0.5">1/2</option>
+                                <option value="0.625">5/8</option>
+                                <option value="0.75">3/4</option>
+                                <option value="0.875">7/8</option>
+                            </select>
+                            <select id="unit" aria-label="Quantity unit" disabled>
+                                <option value="">Select a material first</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="wastage-automated" aria-labelledby="automated-title">
+                    <h2 class="wastage-section-title" id="automated-title">Automated log</h2>
+                    <div class="wastage-fields wastage-automated-fields">
+                        <div class="wastage-field">
+                            <label for="logged-by">Logged by</label>
+                            <input id="logged-by" name="loggedBy" value="System" required>
+                        </div>
+                        <div class="wastage-field">
+                            <label for="logged-on">Logged on</label>
+                            <input id="logged-on" type="text" readonly>
+                        </div>
+                        <div class="wastage-field">
+                            <label for="order-stage">Order stage</label>
+                            <select id="order-stage" name="orderStage" required>
+                                <option>In Progress</option>
+                                <option>Pending</option>
+                                <option>Completed</option>
+                            </select>
+                        </div>
+                        <div class="wastage-field">
+                            <label for="delivery-date">Delivery date</label>
+                            <input id="delivery-date" name="deliveryDate" type="date" required>
+                        </div>
+                    </div>
+                </section>
+            </form>
+        </section>
+
+        <aside class="wastage-aside" aria-label="Financial impact and save">
+            <section class="wastage-impact panel" aria-labelledby="impact-title">
+                <h2 class="wastage-section-title" id="impact-title">Financial impact</h2>
+                <div class="impact-row"><span>Material cost</span><strong id="material-cost">₱225.00</strong></div>
+                <div class="impact-row"><span>Labour cost</span><strong id="labour-cost">₱45.00</strong></div>
+                <div class="impact-row impact-total"><span>Total impact</span><strong id="total-impact">₱270.00</strong></div>
+                <label class="impact-row recoverable-row" for="recoverable">
+                    <span>Recoverable</span>
+                    <select id="recoverable" name="recoverable" form="wastage-form">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </label>
+            </section>
+
+            <section class="panel wastage-save-panel" aria-label="Log status and actions">
+                <label class="wastage-status-label" for="log-status">Status</label>
+                <select id="log-status" name="status" form="wastage-form">
+                    <option>Approved</option>
+                    <option>Pending</option>
+                    <option>Rejected</option>
+                </select>
+                <p class="wastage-feedback" id="wastage-feedback" role="status" aria-live="polite"></p>
+                <button class="wastage-save-button" id="save-log" type="submit" form="wastage-form" disabled>Save log</button>
+                <a class="wastage-cancel-button" href="/inventory.html">Cancel</a>
+            </section>
+        </aside>
+    </div>
+
+    <section class="panel wastage-history" aria-labelledby="history-title">
+        <div class="panel-header">
+            <div>
+                <h2 id="history-title">Recent wastage logs</h2>
+                <p class="panel-subtitle">Saved records from the workshop API</p>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="orders-table">
+                <thead>
+                <tr>
+                    <th scope="col">Order</th>
+                    <th scope="col">Material</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Reason</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Total impact</th>
+                </tr>
+                </thead>
+                <tbody id="wastage-logs"></tbody>
+            </table>
+            <p class="empty-state wastage-empty" id="wastage-empty" role="status">No wastage logs recorded yet.</p>
+        </div>
+    </section>
+</main>
+</body>
+</html>

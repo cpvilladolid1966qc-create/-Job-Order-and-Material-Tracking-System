@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#50512a">
+    <title>Custom Request Details | Style Maria</title>
+    <link rel="stylesheet" href="/css/style.css?v=custom-request-payment-v1">
+    <script src="/js/store.js?v=custom-request-quote-20261027-v2" defer></script>
+    <script src="/js/custom-request-detail.js?v=custom-request-payment-v1" defer></script>
+</head>
+<body class="admin-dashboard custom-request-detail-page">
+<header class="workshop-header">
+    <a class="workshop-brand" href="/admin.html" aria-label="Style Maria dashboard">
+        <span class="workshop-logo">SM</span>
+        <span class="workshop-brand-name">STYLE MARIA</span>
+    </a>
+    <button class="workshop-menu-button" type="button" aria-label="Open navigation"
+            aria-expanded="false" aria-controls="workshop-navigation">
+        <span></span><span></span><span></span>
+    </button>
+    <nav class="workshop-navigation" id="workshop-navigation" aria-label="Admin navigation">
+        <a class="workshop-nav-link" href="/admin.html">
+            <svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg> Dashboard
+        </a>
+        <a class="workshop-nav-link" href="/inventory.html">
+            <svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9"/></svg> Inventory
+        </a>
+        <a class="workshop-nav-link" href="/reports.html">
+            <svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7"/></svg> Reports
+        </a>
+        <a class="workshop-nav-link" href="/wastage.html">
+            <svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10.3 4.4 2.8 18a1.5 1.5 0 0 0 1.3 2.2h15.8a1.5 1.5 0 0 0 1.3-2.2L13.7 4.4a1.9 1.9 0 0 0-3.4 0Z"/><path d="M12 9v4m0 3h.01"/></svg> Wastage
+        </a>
+        <a class="workshop-nav-link" href="/auto-bom.html">
+            <svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg> Auto-BOM
+        </a>
+        <a class="workshop-nav-link" href="/pos.html">
+            <svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg> POS
+        </a>
+        <a class="workshop-nav-link is-active" href="/Custom-req.html" aria-current="page">
+            <svg class="workshop-nav-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v6h6M9 13h6m-6 4h6"/></svg> Custom Requests
+        </a>
+    </nav>
+    <div class="account-menu">
+        <a class="workshop-account" href="/logout">
+            <span class="account-avatar" aria-hidden="true">A</span>
+            <span>Admin</span>
+            <span class="account-chevron" aria-hidden="true">⌄</span>
+        </a>
+    </div>
+</header>
+
+<main class="content custom-request-detail-content">
+    <a class="custom-request-back" href="/Custom-req.html">← Back to Custom Order Requests</a>
+    <div id="custom-request-error" class="custom-request-error" role="alert" hidden></div>
+    <div id="custom-request-loading" class="custom-request-loading" role="status">Loading request...</div>
+    <section id="custom-request-details" hidden aria-labelledby="custom-request-title">
+        <div class="custom-request-detail-heading">
+            <div>
+                <h1 id="custom-request-title">View Custom Order Request</h1>
+                <p>Review the customer's submitted design details and prepare the official quote.</p>
+            </div>
+            <div class="custom-request-heading-meta">
+                <span class="custom-request-id-badge">Request ID: <strong id="request-id"></strong></span>
+                <span id="request-status-pill" class="custom-request-status-pill"></span>
+            </div>
+        </div>
+
+        <div class="custom-request-overview-grid">
+            <section class="panel custom-request-overview-card">
+                <h2><span aria-hidden="true">▤</span> Request Details</h2>
+                <dl class="custom-request-detail-facts">
+                    <div><dt>Customer Name</dt><dd id="customer-name"></dd></div>
+                    <div><dt>Email</dt><dd id="customer-email"></dd></div>
+                    <div><dt>Contact Number</dt><dd id="customer-contact"></dd></div>
+                    <div><dt>Date Submitted</dt><dd><time id="request-submitted"></time></dd></div>
+                    <div class="custom-request-fact-break"><dt>Dimensions (H × W)</dt><dd id="request-dimensions"></dd></div>
+                    <div><dt>Unit of Measurement</dt><dd id="request-unit"></dd></div>
+                    <div class="custom-request-fact-break"><dt>Frame Material</dt><dd id="request-frame"></dd></div>
+                    <div id="custom-frame-row"><dt>Custom Frame Description</dt><dd id="request-custom-frame"></dd></div>
+                    <div class="custom-request-message-row"><dt>Customer Message</dt><dd id="request-message"></dd></div>
+                </dl>
+            </section>
+
+            <section class="panel custom-request-reference-card">
+                <h2><span aria-hidden="true">▧</span> Reference Image</h2>
+                <div id="request-image-empty" class="custom-request-image-empty">No reference image was uploaded.</div>
+                <img id="request-reference-image" class="custom-request-detail-image"
+                     alt="Customer's reference design" hidden>
+            </section>
+        </div>
+
+        <section id="admin-payment-review" class="panel admin-payment-review" hidden>
+            <h2>Customer Payment Proof</h2>
+            <dl>
+                <div><dt>Submitted</dt><dd id="admin-payment-submitted"></dd></div>
+                <div><dt>Status</dt><dd id="admin-payment-status"></dd></div>
+                <div><dt>Amount submitted</dt><dd id="admin-payment-amount"></dd></div>
+                <div><dt>Method</dt><dd id="admin-payment-method"></dd></div>
+                <div><dt>Reference</dt><dd id="admin-payment-reference"></dd></div>
+            </dl>
+            <a id="admin-payment-proof" target="_blank" rel="noopener">View uploaded proof</a>
+            <p>Verify the transfer manually before confirming payment with the customer.</p>
+        </section>
+
+        <form id="custom-request-admin-form" class="panel custom-request-quote-card">
+            <div class="custom-request-quote-heading">
+                <div>
+                    <h2><span aria-hidden="true">▤</span> Admin Review &amp; Quotation</h2>
+                    <p>Review the design, compute the final price, and prepare the official quote.</p>
+                </div>
+                <span class="custom-request-email-note" id="quote-delivery-note"></span>
+            </div>
+            <div class="custom-request-quote-layout">
+                <div class="custom-request-quote-table-wrap">
+                    <table class="custom-request-quote-table">
+                        <thead>
+                        <tr><th scope="col">Item / Description</th><th scope="col">Amount (₱)</th><th scope="col">Notes</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td id="quote-base-description">Base Mirror</td>
+                            <td><label class="visually-hidden" for="quote-base-amount">Base mirror amount</label><input id="quote-base-amount" name="baseMirrorAmount" type="number" min="0" max="9999999999.99" step="0.01" value="0.00" required></td>
+                            <td><span>e.g. Mirror glass with polished edges</span></td>
+                        </tr>
+                        <tr>
+                            <td id="quote-frame-description">Frame</td>
+                            <td><label class="visually-hidden" for="quote-frame-amount">Frame amount</label><input id="quote-frame-amount" name="frameAmount" type="number" min="0" max="9999999999.99" step="0.01" value="0.00" required></td>
+                            <td><span>e.g. Custom finish and material</span></td>
+                        </tr>
+                        <tr>
+                            <td>Labor</td>
+                            <td><label class="visually-hidden" for="quote-labor-amount">Labor amount</label><input id="quote-labor-amount" name="laborAmount" type="number" min="0" max="9999999999.99" step="0.01" value="0.00" required></td>
+                            <td><span>e.g. Fabrication and assembly</span></td>
+                        </tr>
+                        <tr>
+                            <td>Delivery</td>
+                            <td><label class="visually-hidden" for="quote-delivery-amount">Delivery amount</label><input id="quote-delivery-amount" name="deliveryAmount" type="number" min="0" max="9999999999.99" step="0.01" value="0.00" required></td>
+                            <td><span>e.g. Estimated shipping fee</span></td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr><th scope="row">Estimated Total</th><td colspan="2" id="quote-estimated-total">₱0.00</td></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="custom-request-quote-sidebar">
+                    <label for="request-admin-notes">Admin Notes <span>(Optional)</span></label>
+                    <textarea id="request-admin-notes" name="notes" rows="5" maxlength="2000"
+                              placeholder="Add notes for the customer..."></textarea>
+                    <p class="custom-request-admin-hint">These notes will appear with the quote in the customer’s Track Order page.</p>
+                    <p id="custom-request-save-feedback" role="status" aria-live="polite" hidden></p>
+                    <div class="custom-request-admin-actions">
+                        <button type="submit" class="custom-request-save-button" id="save-quote-draft">
+                            <span aria-hidden="true">▣</span> Save as Draft
+                        </button>
+                        <button type="submit" class="custom-request-quote-button" id="send-official-quote">
+                            <span aria-hidden="true">➤</span> Publish Official Quote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</main>
+<div class="dashboard-toast" id="dashboard-toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+unit: admin-order-workflow
+side_effects:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1122"
+    effect: "Admin status/notes action updates custom_orders.admin_status, admin_notes, and status_updated_at."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1151"
+    effect: "Quote draft action updates draft amounts and notes without publishing quote_sent_at."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1185"
+    effect: "Publishing an official quote stores amounts, notes, FOR_QUOTATION, status_updated_at, and quote_sent_at."
+    must_preserve: true
+  - source_loc: "src/main/resources/static/js/store.js:1743"
+    effect: "Admin dashboard order history, statuses, and payment values are currently read/written in styleMariaDashboardOrders localStorage."
+    must_preserve: false
+branches:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1127"
+    condition: "status is not NEW_REQUEST, FOR_QUOTATION, or NEEDS_INFO, or notes exceed 2,000 characters"
+    behavior: "return 400 without updating the request."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1185"
+    condition: "official quote is valid and order exists"
+    behavior: "publish the quote and make it visible to the owning customer."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1024"
+    condition: "request or proof/image does not exist"
+    behavior: "return 404 for detail or binary asset."
+    must_preserve: true
+error_paths:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1155"
+    trigger: "quote contains null, negative, excessive-precision, or over-limit amount"
+    outcome: "return 400 with a validation message and do not publish or save the quote."
+    contract: "HTTP 400 JSON ApiError."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1122"
+    trigger: "admin submits update for an unknown order"
+    outcome: "return 404."
+    contract: "HTTP 404."
+    must_preserve: true
+concurrency:
+  model: sync
+  tx_boundary:
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1122"
+    scope: "Current admin actions perform individual JDBC updates without @Transactional. Target status, quote publish, payment verification, and their audit-event writes must each commit atomically."
+    isolation: "Database default; not explicitly configured."
+    must_preserve: true

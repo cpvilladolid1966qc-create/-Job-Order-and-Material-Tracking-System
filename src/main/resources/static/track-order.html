@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#50512a">
+    <title>Track Your Order | Style Maria</title>
+    <link rel="stylesheet" href="/css/style.css?v=customer-track-orders-payment-v5">
+    <script src="/js/store.js?v=customer-track-orders-20261027-v4" defer></script>
+    <script src="/js/track-order.js?v=customer-track-orders-payment-v5" defer></script>
+</head>
+<body>
+<div class="customer-page track-order-page">
+    <header class="topbar">
+        <a class="brand" href="/home.html" aria-label="Style Maria home">
+            <span class="brand-mark">SM</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span>STYLE MARIA</span>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="/home.html" class="home-link">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-8H9v8H4a1 1 0 0 1-1-1v-9.5Z"/></svg>
+                </span>
+                <span>Home</span>
+            </a>
+            <a href="/customize-order.html">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+                </span>
+                <span>Custom Order</span>
+            </a>
+            <a href="/track-order.html" class="active" aria-current="page">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><path d="M9 4V2h6v2M8 9h2m4 0h2M8 13h2m4 0h2M8 17h2m4 0h2"/></svg>
+                </span>
+                <span>Track Order</span>
+            </a>
+        </nav>
+        <div class="account-menu">
+            <button class="account account-menu-trigger" id="account-menu-trigger"
+                    type="button" aria-expanded="false" aria-controls="account-menu">
+                <span class="account-badge" aria-hidden="true">
+                    <svg data-customer-photo-placeholder viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5"/>
+                        <path d="M4 19c1.8-3 5-4.5 8-4.5S18.2 16 20 19"/>
+                    </svg>
+                    <img data-customer-photo alt="" hidden>
+                </span>
+                <span data-customer-name>Customer</span>
+                <span aria-hidden="true">▾</span>
+            </button>
+            <div class="account-menu-panel" id="account-menu" hidden>
+                <div class="account-menu-heading">
+                    <strong><span data-customer-account-name>Customer</span>'s Account</strong>
+                    <span>Manage your account</span>
+                </div>
+                <a class="account-menu-item account-logout-item" href="/logout"><span>Logout</span></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="track-order-content">
+        <section class="track-order-heading">
+            <h1>Track Your Order</h1>
+            <p>Check the current status of your custom mirror requests.</p>
+        </section>
+
+        <section class="track-order-panel" aria-labelledby="my-orders-title">
+            <div class="track-order-panel-heading">
+                <h2 id="my-orders-title">My Orders</h2>
+                <label class="track-order-search">
+                    <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg>
+                    <span class="visually-hidden">Search by request ID</span>
+                    <input id="track-order-search" type="search" placeholder="Search by Request ID...">
+                </label>
+            </div>
+            <div class="track-order-table-wrap">
+                <table class="track-order-table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Request ID</th>
+                        <th scope="col">Design Preview</th>
+                        <th scope="col">Submitted</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Last Update</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="track-orders-body"></tbody>
+                </table>
+                <p class="track-orders-empty" id="track-orders-empty" role="status" aria-live="polite">
+                    Loading your requests...
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <dialog class="track-order-detail-dialog" id="track-order-detail-dialog"
+            aria-labelledby="track-order-detail-title">
+        <div class="track-order-detail-heading">
+            <div>
+                <a class="track-order-detail-back" href="#" id="back-to-my-orders">← Back to My Orders</a>
+                <h2 id="track-order-detail-title">Order Details</h2>
+                <p>View the details and current status of your custom order.</p>
+            </div>
+            <button type="button" id="close-track-order-details" aria-label="Close details">×</button>
+        </div>
+        <section class="track-order-request-card" aria-labelledby="detail-request-information-title">
+            <div class="track-order-request-card-heading">
+                <h3 id="detail-request-information-title">Request Information</h3>
+                <span class="track-order-status" id="track-order-detail-status"></span>
+            </div>
+            <div class="track-order-detail-layout">
+                <dl class="track-order-detail-facts">
+                    <div><dt>Request ID</dt><dd id="detail-request-id"></dd></div>
+                    <div><dt>Date Submitted</dt><dd id="detail-submitted"></dd></div>
+                    <div><dt>Dimensions (H × W)</dt><dd id="detail-dimensions"></dd></div>
+                    <div><dt>Unit of Measurement</dt><dd id="detail-unit"></dd></div>
+                    <div><dt>Frame Material</dt><dd id="detail-frame"></dd></div>
+                    <div id="detail-custom-frame-row" hidden><dt>Custom Frame Description</dt><dd id="detail-custom-frame"></dd></div>
+                    <div id="detail-message-row" hidden><dt>Customer Message</dt><dd id="detail-message"></dd></div>
+                </dl>
+                <section class="track-order-reference-card" id="detail-image-row" aria-labelledby="detail-image-title" hidden>
+                    <h4 id="detail-image-title">Reference Image</h4>
+                    <img id="detail-reference-image" alt="Your custom order reference">
+                </section>
+            </div>
+        </section>
+        <section class="track-order-progress-card" aria-labelledby="detail-progress-title">
+            <h3 id="detail-progress-title">Order Status</h3>
+            <ol class="track-order-progress" id="track-order-progress"></ol>
+            <p class="track-order-progress-updated" id="track-order-progress-updated"></p>
+            <div class="track-order-quote-notice" id="detail-quote-notice" hidden>
+                <div>
+                    <strong id="detail-quote-notice-title">A quotation is ready.</strong>
+                    <span id="detail-quote-notice-description">Review the quotation and continue to payment when ready.</span>
+                </div>
+                <button type="button" class="track-order-view-quote-button" id="view-customer-quote">
+                    View Quotation
+                </button>
+                <button type="button" class="track-order-view-quote-button" id="proceed-to-payment" hidden>
+                    Proceed to Payment
+                </button>
+            </div>
+        </section>
+        <p class="track-order-detail-error" id="track-order-detail-error" role="alert" hidden></p>
+    </dialog>
+    <dialog class="track-order-quote-dialog" id="customer-quote-dialog"
+            aria-labelledby="customer-quote-title">
+        <div class="track-order-detail-heading">
+            <div>
+                <h2 id="customer-quote-title">Official Quotation</h2>
+                <p>Review the quote for your custom order.</p>
+            </div>
+            <button type="button" id="close-customer-quote" aria-label="Close quotation">×</button>
+        </div>
+        <section class="track-order-quote" id="detail-quote">
+            <h3 id="detail-quote-title">Official Quote</h3>
+            <dl>
+                <div><dt>Base Mirror</dt><dd id="detail-quote-base"></dd></div>
+                <div><dt>Frame</dt><dd id="detail-quote-frame"></dd></div>
+                <div><dt>Labor</dt><dd id="detail-quote-labor"></dd></div>
+                <div><dt>Delivery</dt><dd id="detail-quote-delivery"></dd></div>
+                <div><dt>Estimated Total</dt><dd id="detail-quote-total"></dd></div>
+            </dl>
+            <div class="track-order-quote-notes" id="detail-quote-notes-row" hidden>
+                <h4>Additional Notes</h4>
+                <p id="detail-quote-notes"></p>
+            </div>
+            <p>The required downpayment is 40% of the quoted total. Submit your payment proof on the payment page; the shop will verify it before production.</p>
+        </section>
+    </dialog>
+</div>
+</body>
+</html>

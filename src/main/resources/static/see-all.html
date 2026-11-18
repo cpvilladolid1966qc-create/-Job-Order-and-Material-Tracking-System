@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2e3822">
+    <title>Finished Mirrors | Style Maria</title>
+    <link rel="stylesheet" href="/css/style.css?v=profile-photo-nav-20261026">
+    <script src="/js/store.js?v=profile-photo-nav-20261026" defer></script>
+</head>
+<body>
+    <div class="customer-page portfolio-page">
+        <header class="topbar">
+            <a class="brand" href="/home.html" aria-label="Style Maria home">
+                <span class="brand-mark">SM</span>
+                <span class="brand-divider" aria-hidden="true"></span>
+                <span>STYLE MARIA</span>
+            </a>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="/home.html">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-8H9v8H4a1 1 0 0 1-1-1v-9.5Z" fill="currentColor" stroke="none"></path>
+                        </svg>
+                    </span>
+                    <span>Home</span>
+                </a>
+                <a href="/customize-order.html">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L22 8H6"></path>
+                            <circle cx="10" cy="20" r="1"></circle>
+                            <circle cx="18" cy="20" r="1"></circle>
+                        </svg>
+                    </span>
+                    <span>Custom Order</span>
+                </a>
+                <a href="/track-order.html">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="5" y="4" width="14" height="17" rx="1"></rect>
+                            <path d="M9 4V2h6v2M8 9h2m4 0h2M8 13h2m4 0h2M8 17h2m4 0h2"></path>
+                        </svg>
+                    </span>
+                    <span>Track Order</span>
+                </a>
+            </nav>
+
+            <div class="account-menu">
+                <button class="account account-menu-trigger" id="account-menu-trigger"
+                        type="button" aria-expanded="false" aria-controls="account-menu">
+                    <span class="account-badge" aria-hidden="true">
+                        <svg data-customer-photo-placeholder viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="3.5"></circle>
+                            <path d="M4 19c1.8-3 5-4.5 8-4.5S18.2 16 20 19"></path>
+                        </svg>
+                        <img data-customer-photo alt="" hidden>
+                    </span>
+                    <span data-customer-name>Customer</span>
+                    <span aria-hidden="true">▾</span>
+                </button>
+                <div class="account-menu-panel" id="account-menu" hidden>
+                    <div class="account-menu-heading">
+                        <strong><span data-customer-account-name>Customer</span>'s Account</strong>
+                        <span>Manage your account</span>
+                    </div>
+                    <p class="account-menu-message" id="profile-settings-feedback" role="status" aria-live="polite" hidden></p>
+                    <button class="account-menu-item" id="profile-settings" type="button">
+                        <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M5 21a7 7 0 0 1 14 0"></path>
+                        </svg>
+                        <span>Profile Settings</span>
+                    </button>
+                    <a class="account-menu-item account-logout-item" href="/logout">
+                        <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <path d="M10 17l5-5-5-5M15 12H3"></path>
+                            <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path>
+                        </svg>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <dialog class="profile-settings-dialog" id="profile-settings-dialog" aria-labelledby="profile-settings-title">
+            <form id="profile-settings-form">
+                <header class="profile-settings-page-heading">
+                    <div>
+                        <h2 id="profile-settings-title">Profile Settings</h2>
+                        <p>Manage your personal information, account details, and password.</p>
+                    </div>
+                    <button class="profile-settings-close" type="button" data-close-profile-settings
+                            aria-label="Close profile settings">&times;</button>
+                </header>
+                <section class="profile-settings-card">
+                    <div class="profile-settings-card-heading">
+                        <h3>Profile Information</h3>
+                        <p>Update your name and profile photo.</p>
+                    </div>
+                    <div class="profile-information-grid">
+                        <div class="profile-photo-field">
+                            <div class="profile-photo-preview" id="profile-photo-preview">
+                                <svg id="profile-photo-placeholder" aria-hidden="true" viewBox="0 0 64 64">
+                                    <circle cx="32" cy="22" r="11"></circle>
+                                    <path d="M10 58c2-13 10-20 22-20s20 7 22 20"></path>
+                                </svg>
+                                <img id="profile-photo-image" alt="Your profile photo" hidden>
+                            </div>
+                            <div class="profile-photo-controls">
+                                <label class="profile-photo-button" for="profile-photo-input">Change Photo</label>
+                                <input class="visually-hidden" id="profile-photo-input" name="profilePhoto"
+                                       type="file" accept="image/jpeg,image/png">
+                                <small>JPG or PNG, up to 2 MB</small>
+                            </div>
+                        </div>
+                        <div class="profile-information-fields">
+                            <label for="profile-full-name">Full Name
+                                <input id="profile-full-name" name="fullName" type="text"
+                                       maxlength="100" autocomplete="name" required>
+                            </label>
+                            <label for="profile-email">Email Address
+                                <input id="profile-email" name="email" type="email"
+                                       maxlength="254" autocomplete="email" required>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+                <section class="profile-settings-card">
+                    <div class="profile-settings-card-heading">
+                        <h3>Contact Information</h3>
+                        <p>Keep your contact details up to date.</p>
+                    </div>
+                    <div class="profile-contact-grid">
+                        <label for="profile-phone">Phone Number
+                            <input id="profile-phone" name="phone" type="tel" maxlength="40" autocomplete="tel">
+                        </label>
+                        <label for="profile-address">Address
+                            <textarea id="profile-address" name="address" maxlength="500"
+                                      autocomplete="street-address" rows="2"></textarea>
+                        </label>
+                    </div>
+                </section>
+                <section class="profile-settings-card profile-password-card">
+                    <div class="profile-settings-card-heading">
+                        <h3>Change Password</h3>
+                        <p>Update your password to keep your account secure.</p>
+                    </div>
+                    <div class="profile-password-grid">
+                        <div class="profile-password-fields">
+                            <label for="profile-current-password">Current Password
+                                <input id="profile-current-password" name="currentPassword" type="password"
+                                       autocomplete="current-password" required>
+                            </label>
+                            <label for="profile-new-password">New Password
+                                <input id="profile-new-password" name="newPassword" type="password"
+                                       minlength="12" maxlength="128" autocomplete="new-password">
+                            </label>
+                            <label for="profile-confirm-password">Confirm New Password
+                                <input id="profile-confirm-password" name="confirmPassword" type="password"
+                                       minlength="12" maxlength="128" autocomplete="new-password">
+                            </label>
+                        </div>
+                        <aside class="profile-password-requirements">
+                            <strong>Password Requirements</strong>
+                            <ul>
+                                <li>At least 12 characters</li>
+                                <li>Leave new password fields blank to keep your current password</li>
+                            </ul>
+                        </aside>
+                    </div>
+                </section>
+                <p class="profile-settings-message" id="profile-settings-form-message"
+                   role="status" aria-live="polite" hidden></p>
+                <div class="profile-settings-actions">
+                    <button class="profile-settings-cancel" type="button" data-close-profile-settings>Cancel</button>
+                    <button class="sign-in-button" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </dialog>
+
+        <main class="portfolio-shell">
+            <nav class="portfolio-breadcrumb" aria-label="Breadcrumb">
+                <a href="/home.html">Home</a>
+                <span aria-hidden="true">›</span>
+                <span aria-current="page">Finished Mirrors</span>
+            </nav>
+
+            <section class="portfolio-hero" aria-labelledby="portfolio-title">
+                <div class="portfolio-hero-copy">
+                    <p class="portfolio-eyebrow">Our finished custom mirrors</p>
+                    <h1 id="portfolio-title">Mirrors Made<br>for Real Spaces.</h1>
+                    <p>Explore our finished custom mirrors and see how our designs bring warmth, character, and style to different spaces.</p>
+                </div>
+            </section>
+
+            <section class="portfolio-gallery" aria-label="Finished custom mirror photos">
+                <h2 class="visually-hidden">Finished custom mirrors</h2>
+                <div class="portfolio-grid">
+                    <figure class="portfolio-card">
+                        <img src="/image/m2.png" alt="Three handcrafted wood-framed mirrors displayed together" loading="lazy" decoding="async">
+                        <figcaption>Handcrafted mirrors in natural wood</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m3.png" alt="Tall walnut-finish mirror beside a bed" loading="lazy" decoding="async">
+                        <figcaption>Serpentine mirror in walnut finish</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m4.png" alt="Organic-shaped wood-framed mirror above a cabinet" loading="lazy" decoding="async">
+                        <figcaption>Organic walnut mirror</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m5.png" alt="Decorative mirror with a yellow sculpted frame" loading="lazy" decoding="async">
+                        <figcaption>Decorative sculpted frame</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m6.png" alt="Collection of colorful sculptural and full-length mirrors in a showroom" loading="lazy" decoding="async">
+                        <figcaption>Sculptural mirrors in a range of finishes</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m7.png" alt="Decorative drip-frame mirror beside other sculptural mirrors" loading="lazy" decoding="async">
+                        <figcaption>Drip-frame mirror with a sculptural finish</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m8.png" alt="Wavy silver-framed mirror in a softly lit room" loading="lazy" decoding="async">
+                        <figcaption>Wavy silver-framed mirror</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m9.png" alt="Green-framed full-length mirror in a wood-paneled showroom" loading="lazy" decoding="async">
+                        <figcaption>Full-length mirror with a green frame</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m10.png" alt="Freestanding oval mirror beside an ornate wood-framed mirror" loading="lazy" decoding="async">
+                        <figcaption>Freestanding oval mirror with a metal stand</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m11.png" alt="Organic-shaped walnut mirror mounted on a green wall" loading="lazy" decoding="async">
+                        <figcaption>Organic walnut mirror on a feature wall</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m12.png" alt="Tall mirror with a deep red sculpted frame" loading="lazy" decoding="async">
+                        <figcaption>Tall mirror with a sculpted red frame</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m13.png" alt="Backlit organic-shaped wood mirror above a bathroom basin" loading="lazy" decoding="async">
+                        <figcaption>Backlit organic mirror in a bathroom</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m14.png" alt="Slim freestanding full-length mirror in a bright room" loading="lazy" decoding="async">
+                        <figcaption>Slim freestanding full-length mirror</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m15.png" alt="Tall asymmetrical wood-framed mirror beside a standing oval mirror" loading="lazy" decoding="async">
+                        <figcaption>Asymmetrical wood mirror and standing oval</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m16.png" alt="Two freestanding mirrors displayed in a showroom" loading="lazy" decoding="async">
+                        <figcaption>Freestanding mirrors in a showroom</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m17.png" alt="Pair of arched mirrors with rounded wooden frames" loading="lazy" decoding="async">
+                        <figcaption>Arched mirrors with rounded wood detailing</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m18.png" alt="Backlit mango wood-framed mirror above a bathroom basin" loading="lazy" decoding="async">
+                        <figcaption>Backlit mango wood mirror</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m19.png" alt="Organic wood-framed mirror beside a tall oval mirror" loading="lazy" decoding="async">
+                        <figcaption>Wood-framed mirrors in organic and oval shapes</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m20.png" alt="Collection of colorful sculptural mirrors in a showroom" loading="lazy" decoding="async">
+                        <figcaption>Colorful sculptural mirror collection</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m21.png" alt="Tall asymmetrical full-length mirror with a dark frame" loading="lazy" decoding="async">
+                        <figcaption>Asymmetrical full-length mirror</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m22.png" alt="Collection of arched and organic-shaped wall mirrors" loading="lazy" decoding="async">
+                        <figcaption>Arched and organic wall mirrors</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m23.png" alt="Full-length mirror with a soft wavy cream frame" loading="lazy" decoding="async">
+                        <figcaption>Wavy cream-framed full-length mirror</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m24.png" alt="Tall arched mirror with a black grid frame" loading="lazy" decoding="async">
+                        <figcaption>Black grid-frame arched mirror</figcaption>
+                    </figure>
+                    <figure class="portfolio-card">
+                        <img src="/image/m25.png" alt="Arched mirror with warm backlighting in an entryway" loading="lazy" decoding="async">
+                        <figcaption>Backlit arched mirror in an entryway</figcaption>
+                    </figure>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

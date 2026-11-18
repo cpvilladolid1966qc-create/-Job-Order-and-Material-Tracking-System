@@ -1,0 +1,306 @@
+contracts:
+  - name: session-login
+    unit: identity-and-staff
+    type: rest
+    stability: must_preserve
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:131"
+    contract:
+      method: "POST"
+      path: "/login"
+      request: "application/x-www-form-urlencoded username,password"
+      response: "302 redirect to /admin.html for ADMIN or /home.html for USER; invalid credentials redirect to /?error=invalid"
+      error: "Invalid account/password does not expose a distinct backend credential error."
+      auth: "Creates HttpSession role; ADMIN credential values are externalized through ADMIN_EMAIL/ADMIN_PASSWORD; customers authenticate from customer_accounts."
+    target_contract:
+      method: "POST /login"
+      notes: "Keep configured admin login and existing customer login; extend identity lookup for persisted STAFF accounts, invalidate prior session on successful login, and never accept role/actor from the form."
+    semantic_divergence: []
+
+  - name: customer-owned-custom-order-list
+    unit: customer-custom-orders
+    type: rest
+    stability: frozen
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:827"
+    contract:
+      method: "GET"
+      path: "/api/v1/customer/custom-orders"
+      request: "No body; HttpSession must contain USER role and customerId."
+      response: "JSON array of order summaries filtered by custom_orders.requester_customer_id; sorted newest first."
+      error: "401 JSON message when no signed-in customer session."
+      auth: "Customer session; server-side requester_customer_id filter."
+    target_contract:
+      method: "GET /api/v1/customer/custom-orders"
+      notes: "Preserve route, summary semantics, session ownership filter, ordering, and customer-only access."
+    semantic_divergence: []
+
+  - name: customer-custom-order-detail
+    unit: customer-custom-orders
+    type: rest
+    stability: frozen
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:855"
+    contract:
+      method: "GET"
+      path: "/api/v1/customer/custom-orders/{requestId}"
+      request: "Path requestId; HttpSession USER role and customerId."
+      response: "JSON order detail; unpublished quote fields/notes are hidden; customer status reflects published quote/payment submission."
+      error: "401 without customer session; 404 when the request does not belong to the customer or does not exist."
+      auth: "Authenticated customer; SQL query constrains both requester_customer_id and order_id."
+    target_contract:
+      method: "GET /api/v1/customer/custom-orders/{requestId}"
+      notes: "Preserve the ownership-constrained lookup and quote visibility behavior."
+    semantic_divergence: []
+
+  - name: custom-order-request-submission
+    unit: customer-custom-orders
+    type: rest
+    stability: frozen
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1512"
+    contract:
+      method: "POST"
+      path: "/api/v1/custom-orders"
+      request: "multipart/form-data length,width,unit,frame; optional customFrameRequest,message,referenceImage"
+      response: "201 JSON {orderId,status,quote}; persisted custom_orders row and optional reference image."
+      error: "400 validation error; 401 when not signed in; multipart-image limits are governed by application properties plus controller validation."
+      auth: "USER role with customer identity in HttpSession; requester snapshot is read from the session/database."
+    target_contract:
+      method: "POST /api/v1/custom-orders"
+      notes: "Keep the customer form contract and DB-backed customer ownership; add audit entry in the same transaction as the request insert."
+    semantic_divergence: []
+
+  - name: customer-payment-submission
+    unit: customer-custom-orders
+    type: rest
+    stability: frozen
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1588"
+    contract:
+      method: "POST"
+      path: "/api/v1/custom-orders/{orderId}/checkout"
+      request: "multipart/form-data paymentMethod, optional paymentReference, termsConfirmed, optional receipt"
+      response: "201 JSON checkout response with status PAYMENT_SUBMITTED, quoted total, and downpayment."
+      error: "401 without customer; 404 for another customer's order or absent published quote; 409 for duplicate checkout; 400 on validation failure."
+      auth: "USER role and requester_customer_id ownership from HttpSession; checkout order_id is unique."
+    target_contract:
+      method: "POST /api/v1/custom-orders/{orderId}/checkout"
+      notes: "Preserve route and response behavior; payment row and its audit event must commit together."
+    semantic_divergence: []
+
+  - name: admin-custom-order-review
+    unit: admin-order-workflow
+    type: rest
+    stability: must_preserve
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1007"
+    contract:
+      method: "GET"
+      path: "/api/v1/admin/custom-orders[/{requestId}[/{reference-image|payment-proof}]]"
+      request: "Optional requestId; no body."
+      response: "JSON list/detail or image/receipt bytes; detail joins custom_orders and custom_order_checkouts."
+      error: "404 for missing detail/asset; unauthorized access currently handled by DemoRoleInterceptor."
+      auth: "ADMIN session required by interceptor on /api/v1/admin/custom-orders and descendants."
+    target_contract:
+      method: "GET /api/v1/admin/custom-orders"
+      notes: "Preserve review/detail/proof paths and existing DB-backed customer orders; API authorization must return explicit JSON 401/403 rather than rely on browser navigation."
+    semantic_divergence: []
+
+  - name: admin-custom-order-status-update
+    unit: admin-order-workflow
+    type: rest
+    stability: may_change
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1122"
+    contract:
+      method: "PUT"
+      path: "/api/v1/admin/custom-orders/{requestId}"
+      request: "JSON {status,notes}; existing allowed status values: NEW_REQUEST, FOR_QUOTATION, NEEDS_INFO."
+      response: "200 JSON {requestId,status} for an existing row."
+      error: "400 invalid status/notes; 404 unknown order; unauthorized access currently handled by interceptor."
+      auth: "ADMIN session required."
+    target_contract:
+      method: "PUT /api/v1/admin/custom-orders/{requestId}"
+      notes: "Keep admin quote/control permissions; add separately constrained STAFF operational transitions and same-transaction audit events; do not broaden STAFF to quote/payment-verification actions."
+    semantic_divergence: []
+
+  - name: admin-quote-draft-and-publish
+    unit: admin-order-workflow
+    type: rest
+    stability: must_preserve
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1151"
+    contract:
+      method: "PUT draft; POST publish"
+      path: "/api/v1/admin/custom-orders/{requestId}/quote-draft; /api/v1/admin/custom-orders/{requestId}/publish-quote"
+      request: "JSON amounts baseMirrorAmount, frameAmount, laborAmount, deliveryAmount and notes."
+      response: "JSON requestId/status/total; publication sets quote_sent_at and FOR_QUOTATION."
+      error: "400 for missing/negative/overprecision/oversized quote; 404 if order absent; unauthorized access currently handled by interceptor."
+      auth: "ADMIN session required."
+    target_contract:
+      method: "PUT /api/v1/admin/custom-orders/{requestId}/quote-draft; POST /api/v1/admin/custom-orders/{requestId}/publish-quote"
+      notes: "Preserve existing paths and quote calculations; only ADMIN can create/publish official quotes; write audit with the same transaction."
+    semantic_divergence: []
+
+  - name: wastage-log-read
+    unit: wastage-workflow
+    type: rest
+    stability: must_preserve
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1327"
+    contract:
+      method: "GET"
+      path: "/api/v1/wastage (alias /api/wastage)"
+      request: "No body."
+      response: "JSON array of wastage logs ordered newest first."
+      error: "Unauthorized access currently handled by DemoRoleInterceptor."
+      auth: "ADMIN session required by exact-path interceptor mapping."
+    target_contract:
+      method: "GET /api/v1/wastage"
+      notes: "Keep existing page route and persisted wastage-history response; add STAFF access per selected role baseline."
+    semantic_divergence: []
+
+  - name: wastage-log-create
+    unit: wastage-workflow
+    type: rest
+    stability: may_change
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1355"
+    contract:
+      method: "POST"
+      path: "/api/v1/wastage (alias /api/wastage)"
+      request: "JSON WastageRequest with order/material/quantity/reason/action/unit/context, caller-supplied loggedBy, recoverable, and status."
+      response: "201 WastageLog with server-generated ID/time and calculated material/labour/total impact."
+      error: "400 for invalid/missing values; unauthorized access currently handled by interceptor."
+      auth: "ADMIN session required by exact-path interceptor mapping; current loggedBy value is accepted from request."
+    target_contract:
+      method: "POST /api/v1/wastage"
+      notes: "Derive actor from ADMIN/STAFF session; in one transaction persist wastage log, WASTAGE inventory movement, and audit event."
+    semantic_divergence: []
+
+  - name: target-inventory-catalog
+    unit: inventory-management
+    type: rest
+    stability: may_change
+    source_loc: "src/main/resources/static/inventory.html:114"
+    contract:
+      method: "GET, POST, PATCH"
+      path: "/api/v1/inventory/materials[/{materialId}]"
+      request: "Proposed catalog JSON: name, category, unit, lowStockThreshold, active; PATCH updates metadata/status only."
+      response: "GET returns DB-backed materials with quantity/low-stock status; POST creates a material at zero stock; PATCH returns updated material."
+      error: "400 invalid fields; 404 unknown material; 409 duplicate/constraint conflict."
+      auth: "ADMIN for catalog create/update/deactivate; STAFF/ADMIN may read catalog."
+    target_contract:
+      method: "GET/POST /api/v1/inventory/materials; PATCH /api/v1/inventory/materials/{materialId}"
+      notes: "Proposed interface anchored to the current inventory page. Use typed JSON DTOs; status changes are soft deactivation and must not rewrite movement history."
+    semantic_divergence: []
+
+  - name: target-inventory-movements
+    unit: inventory-management
+    type: rest
+    stability: may_change
+    source_loc: "src/main/resources/static/inventory.html:127"
+    contract:
+      method: "GET, POST"
+      path: "/api/v1/inventory/movements"
+      request: "POST JSON {materialId,type,quantity,reason,adjustmentDirection?,orderId?,description?}; type in RECEIPT, USAGE, RETURN, ADJUSTMENT. adjustmentDirection is required only for ADJUSTMENT; WASTAGE is created only through POST /api/v1/wastage. Actor and timestamp are server-derived."
+      response: "POST returns the appended movement and current material balance; GET returns append-only history, optionally filtered by materialId/type/orderId/date."
+      error: "400 invalid quantity/type/reason; 404 missing material; 409 insufficient stock or concurrent state conflict."
+      auth: "ADMIN/STAFF; actor is taken from authenticated session, never request JSON."
+    target_contract:
+      method: "GET/POST /api/v1/inventory/movements"
+      notes: "Proposed API for the current page-only stock-in and reversal actions. Balance, ledger entry, and audit entry must be atomic; no update/delete ledger endpoint. The wastage endpoint is the only public path that creates WASTAGE ledger entries."
+    semantic_divergence: []
+
+  - name: target-staff-administration
+    unit: identity-and-staff
+    type: rest
+    stability: may_change
+    source_loc: "src/main/resources/static/reports.html:123"
+    contract:
+      method: "GET, POST, PATCH"
+      path: "/api/v1/admin/staff[/{staffId}]; /api/v1/admin/staff/invitations"
+      request: "GET no body; POST invitation {name,email,jobTitle?}; PATCH {active}; authorization role is fixed to STAFF for invitees and is not caller-selectable."
+      response: "GET returns persisted staff directory; POST returns 202 invitation status without raw token; PATCH returns updated staff status."
+      error: "400 invalid name/email; 403 non-admin; 409 duplicate account/open invite; 503 mail delivery failure."
+      auth: "ADMIN only."
+    target_contract:
+      method: "GET /api/v1/admin/staff; POST /api/v1/admin/staff/invitations; PATCH /api/v1/admin/staff/{staffId}"
+      notes: "Proposed staff-management API. The current free-text UI role is a display title only, not a permission role. Send raw token only in invite email; persist token hash/expiry/used state; audit the issuance/status mutation."
+    semantic_divergence: []
+
+  - name: target-staff-invitation-acceptance
+    unit: identity-and-staff
+    type: rest
+    stability: may_change
+    source_loc: "src/main/resources/static/reports.html:123"
+    contract:
+      method: "POST"
+      path: "/api/v1/staff/invitations/accept"
+      request: "JSON {token,newPassword}; token is a random one-time invite secret received by email."
+      response: "201 account-activated result; do not return the token or password."
+      error: "400 invalid password/token shape; 410 expired/used token; 409 account already activated."
+      auth: "Invite token is the sole unauthenticated proof; hash lookup, expiry, email identity, and one-time consumption are enforced server-side."
+    target_contract:
+      method: "POST /api/v1/staff/invitations/accept"
+      notes: "Consume invitation and create/activate staff credential atomically; invalidate token on success."
+    semantic_divergence: []
+
+  - name: target-pos-orders
+    unit: pos-sales
+    type: rest
+    stability: may_change
+    source_loc: "src/main/resources/static/pos.html:135"
+    contract:
+      method: "GET, POST, PATCH"
+      path: "/api/v1/orders[/{orderId}/status]"
+      request: "POST order/customer/item/amount data; PATCH status/payment transition data. Actor and event time are server-derived."
+      response: "GET returns DB-backed orders; POST returns created order; PATCH returns authoritative updated status."
+      error: "400 invalid order/payment; 404 unknown order; 409 invalid/repeated transition."
+      auth: "ADMIN/STAFF; server enforces each permitted operational transition."
+    target_contract:
+      method: "GET/POST /api/v1/orders; PATCH /api/v1/orders/{orderId}/status"
+      notes: "Proposed replacement for styleMariaPosOrders and dashboard business order localStorage; start empty and do not import browser values. STAFF operational status values are PENDING, FOR_CONFIRMATION, IN_PRODUCTION, and COMPLETED. Persist each mutation and audit together."
+    semantic_divergence: []
+
+  - name: target-admin-payment-verification
+    unit: admin-order-workflow
+    type: rest
+    stability: may_change
+    source_loc: "src/main/resources/static/custom-request-detail.html:107"
+    contract:
+      method: "POST"
+      path: "/api/v1/admin/custom-orders/{requestId}/payment-verification"
+      request: "JSON {decision:VERIFIED|REJECTED,notes}; submitted receipt and payment are read from the existing checkout row."
+      response: "200 JSON {requestId,paymentStatus,verifiedAt}; paymentStatus is VERIFIED or REJECTED and verifiedAt is server time."
+      error: "400 invalid decision; 404 missing request/payment submission; 409 already verified or invalid transition; 403 non-admin."
+      auth: "ADMIN only."
+    target_contract:
+      method: "POST /api/v1/admin/custom-orders/{requestId}/payment-verification"
+      notes: "Proposed admin-only action; payment status change and audit row are in one transaction. Staff cannot verify payment."
+    semantic_divergence: []
+
+  - name: customer-default-order-quote
+    unit: customer-custom-orders
+    type: rest
+    stability: frozen
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1507"
+    contract:
+      method: "GET"
+      path: "/api/v1/custom-orders/quote"
+      request: "No body."
+      response: "JSON default PriceQuote from MirrorPriceCalculator."
+      error: "No application-specific error contract."
+      auth: "Public quote preview; order creation still requires a customer session."
+    target_contract:
+      method: "GET /api/v1/custom-orders/quote"
+      notes: "Preserve the quote preview route and response shape used by customer UI."
+    semantic_divergence: []
+
+  - name: customer-combined-order-checkout
+    unit: customer-custom-orders
+    type: rest
+    stability: frozen
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1648"
+    contract:
+      method: "POST"
+      path: "/api/v1/custom-orders/checkout"
+      request: "multipart/form-data custom-order dimensions/frame/referenceImage plus customer checkout/payment/receipt fields."
+      response: "201 JSON CheckoutResponse with status DEMO_SUBMITTED after creating the custom order and checkout in one request."
+      error: "401 when no customer session; 400 on either custom-order or checkout validation; DB failure rolls back the transaction."
+      auth: "USER role; requester identity comes from the authenticated session; checkout contact/payment snapshot fields are currently submitted with the form."
+    target_contract:
+      method: "POST /api/v1/custom-orders/checkout"
+      notes: "Keep this current demo UI route functional while adding audit writes to the same transaction. It records DEMO_SUBMITTED and is not a real payment gateway or payment verification."
+    semantic_divergence: []

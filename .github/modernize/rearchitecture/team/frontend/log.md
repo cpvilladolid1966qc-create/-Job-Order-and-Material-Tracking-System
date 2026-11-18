@@ -1,0 +1,13 @@
+## [t6] Wiring server-backed frontend workflows
+- Codebase/domain discoveries: inventory movements expose actor and post-movement balance; a receipt is the supported way to seed quantity after creating a zero-stock material. Existing customer custom-order detail and quote/payment-review routes remain separate from operational POS orders.
+- Wrong assumptions and corrections: browser-local staff/business-order data is not a migration source; frontend screens now start from backend state. Admin-only controls can remain visible on staff-accessible inventory pages because server authorization is authoritative, but this is a usability limitation until a session-role UI contract exists.
+- Debugging dead-ends and what actually worked: JavaScript syntax tooling was unavailable because Node.js is absent. Browser execution against a temporary H2-backed app validated the modules. The Maven wrapper launch property had to be passed through `cmd.exe` before the Spring Boot goal; placing it after the goal caused Maven to parse it as an invalid lifecycle phase.
+- Techniques/patterns worth reusing: isolate each server-backed static-page workflow in a deferred module, centralize same-origin request/error handling, reload after mutations, and validate actual UI/API behavior against disposable H2 state. Normalize query strings in script-path checks.
+- Learnings consumed: [teamlead/spring-mvc-business-workflow-test-strategy, backend/session-actor-transactional-audit]
+
+## [t10.1] Bind wastage to the inventory catalog
+- Codebase/domain discoveries: `GET /api/v1/inventory/materials` returns active materials by default with `id`, `name`, `unitCode`, and `unitName`; wastage requests require both `materialId` and a unit matching that catalog row.
+- Wrong assumptions and corrections: the old `Inches (in)`/`Pieces` selectors did not match persisted unit codes; material name alone is ambiguous when the catalog contains duplicate names.
+- Debugging dead-ends and what actually worked: Node.js is unavailable, so browser-side execution could not be repeated; the full H2-backed Maven integration suite verified active-only listing and ID/unit wastage decrement, supplemented by static HTML checks.
+- Techniques/patterns worth reusing: derive the displayed unit from the selected catalog material and submit its canonical code; disable fractional quantities for discrete `EA` units.
+- Learnings consumed: [frontend/server-api-modules]

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#50512a">
+    <title>Customize Your Mirror | Style Maria</title>
+    <link rel="stylesheet" href="/css/style.css?v=customer-order-account-20261027">
+    <script src="/js/store.js?v=customer-order-account-20261027" defer></script>
+    <script src="/js/customize-order.js?v=customer-order-account-20261027" defer></script>
+</head>
+<body class="custom-order-page">
+    <header class="topbar">
+        <a class="brand" href="/home.html" aria-label="Style Maria home">
+            <span class="brand-mark">SM</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span>STYLE MARIA</span>
+        </a>
+
+        <nav class="main-nav" aria-label="Main navigation">
+            <a class="home-link" href="/home.html">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-8H9v8H4a1 1 0 0 1-1-1v-9.5Z"></path>
+                    </svg>
+                </span>
+                <span>Home</span>
+            </a>
+            <a class="active" href="/customize-order.html" aria-current="page">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L22 8H6"></path>
+                        <circle cx="10" cy="20" r="1"></circle>
+                        <circle cx="18" cy="20" r="1"></circle>
+                    </svg>
+                </span>
+                <span>Custom Order</span>
+            </a>
+            <a href="/track-order.html">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="5" y="4" width="14" height="17" rx="1"></rect>
+                        <path d="M9 4V2h6v2M8 9h2m4 0h2M8 13h2m4 0h2M8 17h2m4 0h2"></path>
+                    </svg>
+                </span>
+                <span>Track Order</span>
+            </a>
+        </nav>
+
+        <div class="account-menu">
+            <button class="account account-menu-trigger" id="account-menu-trigger"
+                    type="button" aria-expanded="false" aria-controls="account-menu">
+                <span class="account-badge" aria-hidden="true">
+                    <svg data-customer-photo-placeholder viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5"></circle>
+                        <path d="M4 19c1.8-3 5-4.5 8-4.5S18.2 16 20 19"></path>
+                    </svg>
+                    <img data-customer-photo alt="" hidden>
+                </span>
+                <span data-customer-name>Customer</span>
+                <span aria-hidden="true">⌄</span>
+            </button>
+            <div class="account-menu-panel" id="account-menu" hidden>
+                <div class="account-menu-heading">
+                    <strong><span data-customer-account-name>Customer</span>'s Account</strong>
+                    <span>Manage your account</span>
+                </div>
+                <p class="account-menu-message" id="profile-settings-feedback" role="status" aria-live="polite" hidden></p>
+                <button class="account-menu-item" id="profile-settings" type="button">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="4"></circle>
+                        <path d="M5 21a7 7 0 0 1 14 0"></path>
+                    </svg>
+                    <span>Profile Settings</span>
+                </button>
+                <a class="account-menu-item account-logout-item" href="/logout">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                        <path d="M10 17l5-5-5-5M15 12H3"></path>
+                        <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path>
+                    </svg>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <dialog class="profile-settings-dialog" id="profile-settings-dialog" aria-labelledby="profile-settings-title">
+        <form id="profile-settings-form">
+            <header class="profile-settings-page-heading">
+                <div>
+                    <h2 id="profile-settings-title">Profile Settings</h2>
+                    <p>Manage your personal information, account details, and password.</p>
+                </div>
+                <button class="profile-settings-close" type="button" data-close-profile-settings
+                        aria-label="Close profile settings">&times;</button>
+            </header>
+            <section class="profile-settings-card">
+                <div class="profile-settings-card-heading">
+                    <h3>Profile Information</h3>
+                    <p>Update your name and profile photo.</p>
+                </div>
+                <div class="profile-information-grid">
+                    <div class="profile-photo-field">
+                        <div class="profile-photo-preview" id="profile-photo-preview">
+                            <svg id="profile-photo-placeholder" aria-hidden="true" viewBox="0 0 64 64">
+                                <circle cx="32" cy="22" r="11"></circle>
+                                <path d="M10 58c2-13 10-20 22-20s20 7 22 20"></path>
+                            </svg>
+                            <img id="profile-photo-image" alt="Your profile photo" hidden>
+                        </div>
+                        <div class="profile-photo-controls">
+                            <label class="profile-photo-button" for="profile-photo-input">Change Photo</label>
+                            <input class="visually-hidden" id="profile-photo-input" name="profilePhoto"
+                                   type="file" accept="image/jpeg,image/png">
+                            <small>JPG or PNG, up to 2 MB</small>
+                        </div>
+                    </div>
+                    <div class="profile-information-fields">
+                        <label for="profile-full-name">Full Name
+                            <input id="profile-full-name" name="fullName" type="text"
+                                   maxlength="100" autocomplete="name" required>
+                        </label>
+                        <label for="profile-email">Email Address
+                            <input id="profile-email" name="email" type="email"
+                                   maxlength="254" autocomplete="email" required>
+                        </label>
+                    </div>
+                </div>
+            </section>
+            <section class="profile-settings-card">
+                <div class="profile-settings-card-heading">
+                    <h3>Contact Information</h3>
+                    <p>Keep your contact details up to date.</p>
+                </div>
+                <div class="profile-contact-grid">
+                    <label for="profile-phone">Phone Number
+                        <input id="profile-phone" name="phone" type="tel" maxlength="40" autocomplete="tel">
+                    </label>
+                    <label for="profile-address">Address
+                        <textarea id="profile-address" name="address" maxlength="500"
+                                  autocomplete="street-address" rows="2"></textarea>
+                    </label>
+                </div>
+            </section>
+            <section class="profile-settings-card profile-password-card">
+                <div class="profile-settings-card-heading">
+                    <h3>Change Password</h3>
+                    <p>Update your password to keep your account secure.</p>
+                </div>
+                <div class="profile-password-grid">
+                    <div class="profile-password-fields">
+                        <label for="profile-current-password">Current Password
+                            <input id="profile-current-password" name="currentPassword" type="password"
+                                   autocomplete="current-password" required>
+                        </label>
+                        <label for="profile-new-password">New Password
+                            <input id="profile-new-password" name="newPassword" type="password"
+                                   minlength="12" maxlength="128" autocomplete="new-password">
+                        </label>
+                        <label for="profile-confirm-password">Confirm New Password
+                            <input id="profile-confirm-password" name="confirmPassword" type="password"
+                                   minlength="12" maxlength="128" autocomplete="new-password">
+                        </label>
+                    </div>
+                    <aside class="profile-password-requirements">
+                        <strong>Password Requirements</strong>
+                        <ul>
+                            <li>At least 12 characters</li>
+                            <li>Leave new password fields blank to keep your current password</li>
+                        </ul>
+                    </aside>
+                </div>
+            </section>
+            <p class="profile-settings-message" id="profile-settings-form-message"
+               role="status" aria-live="polite" hidden></p>
+            <div class="profile-settings-actions">
+                <button class="profile-settings-cancel" type="button" data-close-profile-settings>Cancel</button>
+                <button class="sign-in-button" type="submit">Save Changes</button>
+            </div>
+        </form>
+    </dialog>
+
+    <main class="custom-order-shell">
+        <nav class="custom-order-breadcrumb" aria-label="Breadcrumb">
+            <a href="/home.html">⌂ Home</a>
+            <span aria-hidden="true">›</span>
+            <span>Custom Order</span>
+            <span class="review-breadcrumb-separator" id="review-breadcrumb-separator" aria-hidden="true" hidden>›</span>
+            <span id="review-breadcrumb-current" aria-current="page" hidden>Review</span>
+            <span class="checkout-breadcrumb-separator" id="checkout-breadcrumb-separator" aria-hidden="true" hidden>›</span>
+            <span id="checkout-breadcrumb-current" aria-current="page" hidden>Checkout &amp; Payment</span>
+            <span class="submitted-breadcrumb-separator" id="submitted-breadcrumb-separator" aria-hidden="true" hidden>›</span>
+            <span id="submitted-breadcrumb-current" aria-current="page" hidden>Request Submitted</span>
+        </nav>
+
+        <section class="custom-order-heading" id="custom-order-heading" aria-labelledby="custom-order-title">
+            <h1 id="custom-order-title">Customize Your Mirror</h1>
+            <p>Create a mirror that fits your space. Provide your preferred dimensions, frame material, and a reference image.</p>
+        </section>
+
+        <form class="custom-order-layout" id="custom-order-form" novalidate>
+            <section class="custom-order-preview-card" aria-label="Mirror design preview">
+                <div class="custom-order-preview">
+                    <img id="mirror-preview" alt="Customer reference image" hidden>
+                    <div class="custom-order-placeholder" id="preview-placeholder">
+                        <span class="placeholder-icon" aria-hidden="true">＋</span>
+                        <p>Your reference image will appear here</p>
+                        <span>Upload an image to see your design reference</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="custom-order-form-card" aria-label="Custom mirror details">
+                <div class="custom-order-step">
+                    <span class="step-number" aria-hidden="true">1</span>
+                    <div class="step-content">
+                        <div class="step-heading-row">
+                            <div>
+                                <h2>Enter Dimensions</h2>
+                                <p>Input your desired mirror size. You can select the unit of measurement.</p>
+                            </div>
+                            <label class="unit-select-label" for="dimension-unit">
+                                <span class="visually-hidden">Dimension unit</span>
+                                <select id="dimension-unit" name="unit">
+                                    <option value="in">inches</option>
+                                    <option value="cm">cm</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="dimension-fields">
+                            <label for="mirror-length">
+                                Length (Height)
+                                <span class="dimension-input">
+                                    <input id="mirror-length" name="length" type="number" min="1" max="500" step="any" value="0" required>
+                                    <span class="dimension-unit">in</span>
+                                </span>
+                            </label>
+                            <label for="mirror-width">
+                                Width
+                                <span class="dimension-input">
+                                    <input id="mirror-width" name="width" type="number" min="1" max="500" step="any" value="0" required>
+                                    <span class="dimension-unit">in</span>
+                                </span>
+                            </label>
+                        </div>
+                        <p class="dimension-help"><span aria-hidden="true">ⓘ</span> You can switch between centimeters (cm) and inches (in). &nbsp;1 inch = 2.54 cm</p>
+                        <p class="field-error" id="dimension-error" hidden></p>
+                    </div>
+                </div>
+
+                <fieldset class="custom-order-step frame-step">
+                    <legend class="visually-hidden">Select frame material</legend>
+                    <span class="step-number" aria-hidden="true">2</span>
+                    <div class="step-content">
+                        <h2>Select Frame Material</h2>
+                        <p>Choose the frame material for your custom mirror.</p>
+                        <div class="frame-options">
+                            <label class="frame-option">
+                                <input type="radio" name="frame" value="Solid Wood" checked>
+                                <span class="frame-swatch swatch-wood" aria-hidden="true"></span>
+                                <span>Solid Wood</span>
+                            </label>
+                            <label class="frame-option">
+                                <input type="radio" name="frame" value="Natural Oak">
+                                <span class="frame-swatch swatch-oak" aria-hidden="true"></span>
+                                <span>Natural Oak</span>
+                            </label>
+                            <label class="frame-option">
+                                <input type="radio" name="frame" value="Matte Black">
+                                <span class="frame-swatch swatch-black" aria-hidden="true"></span>
+                                <span>Matte Black</span>
+                            </label>
+                            <label class="frame-option">
+                                <input type="radio" name="frame" value="White">
+                                <span class="frame-swatch swatch-white" aria-hidden="true"></span>
+                                <span>White</span>
+                            </label>
+                            <label class="frame-option">
+                                <input type="radio" name="frame" value="Custom (Request)">
+                                <span class="frame-swatch swatch-custom" aria-hidden="true"></span>
+                                <span>Custom<br>(Request)</span>
+                            </label>
+                        </div>
+                        <label class="custom-frame-request" id="custom-frame-request-field" for="custom-frame-request" hidden>
+                            <span>Describe your custom frame request</span>
+                            <input id="custom-frame-request" name="customFrameRequest" type="text"
+                                   maxlength="200" placeholder="Describe the material, color, or finish you want">
+                            <span class="field-error" id="custom-frame-error" hidden></span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="custom-order-step upload-step">
+                    <span class="step-number" aria-hidden="true">3</span>
+                    <div class="step-content">
+                        <h2>Upload Reference Image</h2>
+                        <p>You can upload a photo, sketch, or inspiration for your custom mirror.</p>
+                        <label class="reference-upload" id="reference-upload" for="reference-image">
+                            <input id="reference-image" name="referenceImage" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+                            <span class="upload-arrow" aria-hidden="true">⇧</span>
+                            <span class="upload-prompt">Drag and drop your image here, or <span class="upload-browse">click to browse</span></span>
+                            <span class="upload-hint">Accepted formats: JPG, PNG (Max 10MB)</span>
+                            <span class="upload-filename" id="upload-filename" aria-live="polite"></span>
+                        </label>
+                        <button class="upload-remove-button" id="remove-reference-image" type="button" hidden>
+                            Remove uploaded image
+                        </button>
+                        <p class="field-error" id="upload-error" hidden></p>
+                    </div>
+                </div>
+
+                <div class="custom-order-step message-step">
+                    <span class="step-number" aria-hidden="true">4</span>
+                    <div class="step-content">
+                        <h2>Add a Message (Optional)</h2>
+                        <p>Tell us more about your custom mirror. Include any special requests, design details, or instructions.</p>
+                        <label class="visually-hidden" for="custom-order-message">Message about your custom mirror</label>
+                        <textarea id="custom-order-message" name="message" maxlength="500"
+                        placeholder="Write your message here..."></textarea>
+                        <div class="message-character-count" id="message-character-count" aria-live="polite">0/500</div>
+                    </div>
+                </div>
+
+                <button class="custom-order-continue" type="submit">Continue <span aria-hidden="true">→</span></button>
+                <p class="custom-order-feedback" id="custom-order-feedback" role="status" aria-live="polite" hidden></p>
+            </section>
+        </form>
+
+        <section class="custom-order-review" id="custom-order-review" aria-labelledby="review-title" hidden>
+            <div class="review-preview-card">
+                <div class="review-preview">
+                    <img id="review-reference-image" alt="Your custom mirror reference image" hidden>
+                    <div class="review-preview-placeholder" id="review-preview-placeholder">
+                        <span class="placeholder-icon" aria-hidden="true">＋</span>
+                        <p>No reference image added</p>
+                    </div>
+                </div>
+            </div>
+            <section class="review-details-card" aria-labelledby="review-details-title">
+                <div class="review-title-row">
+                    <div>
+                        <h1 id="review-title" tabindex="-1">Review Your Custom Order</h1>
+                        <p>Please review your customization details before submitting your request.</p>
+                    </div>
+                    <button class="review-edit-button" id="edit-custom-order" type="button">
+                        <span aria-hidden="true">✎</span> Edit
+                    </button>
+                </div>
+                <div class="review-details">
+                    <h2 id="review-details-title">Customization Details</h2>
+                    <dl>
+                        <div class="review-detail-row">
+                            <dt>Dimensions</dt>
+                            <dd id="review-dimensions"></dd>
+                        </div>
+                        <div class="review-detail-row">
+                            <dt>Unit</dt>
+                            <dd id="review-unit"></dd>
+                        </div>
+                        <div class="review-detail-row">
+                            <dt>Frame Material</dt>
+                            <dd id="review-frame"></dd>
+                        </div>
+                        <div class="review-detail-row" id="review-custom-frame-row" hidden>
+                            <dt>Custom Frame Request</dt>
+                            <dd id="review-custom-frame"></dd>
+                        </div>
+                        <div class="review-detail-row" id="review-reference-row" hidden>
+                            <dt>Reference Image</dt>
+                            <dd id="review-reference-name"></dd>
+                        </div>
+                        <div class="review-detail-row" id="review-message-row" hidden>
+                            <dt>Message</dt>
+                            <dd id="review-message"></dd>
+                        </div>
+                    </dl>
+                </div>
+                <p class="review-note">Submit your design for review. Our team will review your request and prepare an official quote before payment.</p>
+                <p class="custom-order-feedback" id="review-feedback" role="status" aria-live="polite" hidden></p>
+            </section>
+            <div class="review-actions">
+                <button class="review-back-button" id="back-to-customize" type="button">
+                    <span aria-hidden="true">←</span> Back to Customize
+                </button>
+                <button class="custom-order-continue review-submit-button" id="submit-custom-order" type="button">
+                    Submit Request for Review <span aria-hidden="true">→</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="custom-order-confirmation" id="custom-order-confirmation"
+                 aria-labelledby="confirmation-title" hidden>
+            <div class="confirmation-success-card">
+                <div class="confirmation-success-icon" aria-hidden="true">✓</div>
+                <h1 id="confirmation-title" tabindex="-1">Your Custom Order Has Been Submitted</h1>
+                <p>Thank you! We’ve received your custom mirror request. Our team will review your design and prepare an official quote. Payment comes after you approve the quote.</p>
+                <ol class="confirmation-timeline" aria-label="Request progress">
+                    <li class="is-complete">
+                        <span class="confirmation-timeline-icon" aria-hidden="true">▤</span>
+                        <strong>1. Request Submitted</strong>
+                        <span>We’ve received your design details.</span>
+                    </li>
+                    <li class="is-current">
+                        <span class="confirmation-timeline-icon" aria-hidden="true">⌕</span>
+                        <strong>2. Admin Review</strong>
+                        <span>Our team is reviewing your request and preparing a quote.</span>
+                    </li>
+                    <li>
+                        <span class="confirmation-timeline-icon" aria-hidden="true">▤</span>
+                        <strong>3. Quote Ready</strong>
+                        <span>You’ll be notified when the official quote is available.</span>
+                    </li>
+                    <li>
+                        <span class="confirmation-timeline-icon" aria-hidden="true">▣</span>
+                        <strong>4. Payment</strong>
+                        <span>Payment is arranged after you approve the quote.</span>
+                    </li>
+                    <li>
+                        <span class="confirmation-timeline-icon" aria-hidden="true">⚙</span>
+                        <strong>5. Production</strong>
+                        <span>Production begins after payment is confirmed.</span>
+                    </li>
+                </ol>
+                <p class="confirmation-notice">Your request is now in the admin review queue. Keep your request ID to refer to it later.</p>
+            </div>
+
+            <section class="confirmation-order-card" aria-labelledby="confirmation-details-title">
+                <div class="confirmation-order-heading">
+                    <h2 id="confirmation-details-title">Order Details</h2>
+                    <span>Request ID: <strong id="confirmation-request-id"></strong></span>
+                </div>
+                <dl class="confirmation-order-details">
+                    <div><dt>Date Submitted</dt><dd id="confirmation-submitted-date"></dd></div>
+                    <div><dt>Dimensions</dt><dd id="confirmation-dimensions"></dd></div>
+                    <div><dt>Frame Material</dt><dd id="confirmation-frame"></dd></div>
+                    <div id="confirmation-custom-frame-row" hidden><dt>Custom Frame Description</dt><dd id="confirmation-custom-frame"></dd></div>
+                    <div id="confirmation-reference-row" hidden>
+                        <dt>Reference Image</dt>
+                        <dd><img id="confirmation-reference-image" alt="Your uploaded reference design"></dd>
+                    </div>
+                    <div id="confirmation-message-row" hidden><dt>Message</dt><dd id="confirmation-message"></dd></div>
+                </dl>
+            </section>
+            <div class="confirmation-actions">
+                <a class="confirmation-home-button" href="/home.html">← &nbsp; Back to Home</a>
+                <a class="confirmation-customize-button" href="/customize-order.html">Create Another Request</a>
+            </div>
+        </section>
+
+        <section class="checkout-screen" id="checkout-screen" aria-labelledby="checkout-title" hidden>
+            <div class="checkout-page-heading">
+                <h1 id="checkout-title" tabindex="-1">Checkout &amp; Payment</h1>
+                <p>Complete your details and review the calculated downpayment. The site records demo orders but does not process or verify payments.</p>
+            </div>
+            <form class="checkout-layout" id="checkout-form" novalidate>
+                <div class="checkout-main-card">
+                    <section class="checkout-step" aria-labelledby="shipping-title">
+                        <div class="checkout-step-heading">
+                            <span class="step-number" aria-hidden="true">1</span>
+                            <h2 id="shipping-title">Shipping Address</h2>
+                        </div>
+                        <div class="checkout-address-fields">
+                            <label for="checkout-customer-name">Full name
+                                <input id="checkout-customer-name" name="customerName" maxlength="100" autocomplete="name" required>
+                            </label>
+                            <label for="checkout-contact-number">Contact number
+                                <input id="checkout-contact-number" name="contactNumber" maxlength="40" autocomplete="tel" required>
+                            </label>
+                            <label class="checkout-address-field" for="checkout-address">Complete delivery address
+                                <textarea id="checkout-address" name="address" maxlength="500" autocomplete="street-address" required></textarea>
+                            </label>
+                        </div>
+                    </section>
+
+                    <section class="checkout-step" aria-labelledby="checkout-payment-title">
+                        <div class="checkout-step-heading">
+                            <span class="step-number" aria-hidden="true">2</span>
+                            <h2 id="checkout-payment-title">Payment Method</h2>
+                        </div>
+                        <p class="checkout-step-description">Choose GCash, Maya, or GoTyme to view the QR image.</p>
+                        <div class="payment-method-options">
+                            <label><input type="radio" name="paymentMethod" value="GCash" checked><span>GCash</span></label>
+                            <label><input type="radio" name="paymentMethod" value="Maya"><span>Maya</span></label>
+                            <label><input type="radio" name="paymentMethod" value="GoTyme"><span>GoTyme</span></label>
+                        </div>
+                        <div class="checkout-payment-qr" id="checkout-payment-qr" aria-live="polite">
+                            <strong id="checkout-payment-qr-title">GCash QR code</strong>
+                            <img id="checkout-payment-qr-image" src="/image/gcashqr.png" alt="QR code shown for GCash">
+                            <p>This same QR image is shown for all three choices. Payment-app compatibility is not verified; confirm the recipient and amount in your app before paying.</p>
+                        </div>
+                        <div class="demo-payment-notice" role="note">
+                            <strong>Payment is not verified by this site</strong>
+                            <p>Checkout only records a demo order. It cannot confirm whether a QR payment was completed. Verify the payee and amount in your payment app before sending money.</p>
+                        </div>
+                        <div class="checkout-payment-fields">
+                            <label for="checkout-payment-reference">Payment reference (optional)
+                                <input id="checkout-payment-reference" name="paymentReference" maxlength="100" placeholder="Leave blank unless testing with a sample reference">
+                            </label>
+                            <label class="checkout-receipt-field" for="checkout-receipt">Payment receipt (optional, JPG, PNG, or PDF; max 10MB)
+                                <input id="checkout-receipt" name="receipt" type="file" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf">
+                                <span class="checkout-receipt-name" id="checkout-receipt-name" aria-live="polite">No file selected</span>
+                            </label>
+                        </div>
+                        <p class="field-error" id="checkout-error" role="alert" hidden></p>
+                    </section>
+
+                    <section class="checkout-step checkout-terms-step" aria-labelledby="checkout-terms-title">
+                        <div class="checkout-step-heading">
+                            <span class="step-number" aria-hidden="true">3</span>
+                            <h2 id="checkout-terms-title">Terms and Confirmation</h2>
+                        </div>
+                        <label class="checkout-terms">
+                            <input id="checkout-terms-confirmed" name="termsConfirmed" type="checkbox" value="true" required>
+                            <span>I understand this site records a demo order but does not process or verify QR payments. I will verify the recipient and amount in my payment app.</span>
+                        </label>
+                    </section>
+                    <p class="checkout-feedback" id="checkout-feedback" role="status" aria-live="polite" hidden></p>
+                </div>
+
+                <aside class="checkout-summary-card" aria-labelledby="checkout-summary-title">
+                    <h2 id="checkout-summary-title">Order Summary</h2>
+                    <div class="checkout-summary-product">
+                        <div class="checkout-summary-image">
+                            <img id="checkout-reference-image" alt="Custom mirror reference image" hidden>
+                            <span id="checkout-image-placeholder">No reference image</span>
+                        </div>
+                        <div>
+                            <strong>Custom Mirror</strong>
+                            <span id="checkout-summary-dimensions"></span>
+                            <span id="checkout-summary-frame"></span>
+                            <span id="checkout-summary-custom-frame" hidden></span>
+                            <span id="checkout-summary-message" hidden></span>
+                        </div>
+                    </div>
+                    <dl class="checkout-price-breakdown">
+                        <div><dt>Base Price</dt><dd id="quote-base-price"></dd></div>
+                        <div><dt>Custom Size Adjustment</dt><dd id="quote-size-adjustment"></dd></div>
+                        <div><dt>Frame Adjustment</dt><dd id="quote-frame-adjustment"></dd></div>
+                        <div><dt>LED Lighting</dt><dd id="quote-led-lighting"></dd></div>
+                        <div><dt>Wall Mounting Hardware</dt><dd id="quote-wall-hardware"></dd></div>
+                        <div class="checkout-subtotal"><dt>Subtotal</dt><dd id="quote-subtotal"></dd></div>
+                        <div><dt>Delivery Fee</dt><dd id="quote-delivery"></dd></div>
+                        <div class="checkout-total"><dt>Total Amount</dt><dd id="quote-total"></dd></div>
+                    </dl>
+                    <div class="checkout-downpayment">
+                        <strong>Demo Downpayment to Pay</strong>
+                        <span>Calculated as 40% of your total order payment. No payment will be collected.</span>
+                        <b id="quote-downpayment"></b>
+                    </div>
+                    <div class="checkout-balance">
+                        <span>Remaining balance</span>
+                        <strong id="quote-remaining-balance"></strong>
+                    </div>
+                    <div class="checkout-reminder">
+                        <strong>Important Reminder</strong>
+                        <p>These are sample prices from the current calculator configuration. Final custom-order pricing may need confirmation.</p>
+                    </div>
+                </aside>
+
+                <div class="checkout-actions">
+                    <button class="review-back-button" id="back-to-review" type="button">← Back to Review</button>
+                    <button class="custom-order-continue checkout-submit-button" id="place-demo-order" type="submit">
+                        Place Demo Order <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

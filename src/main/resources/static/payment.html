@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#50512a">
+    <title>Proceed to Payment | Style Maria</title>
+    <link rel="stylesheet" href="/css/style.css?v=custom-payment-layout-v6">
+    <script src="/js/store.js?v=customer-track-orders-payment-v5" defer></script>
+    <script src="/js/payment.js?v=custom-payment-layout-v5" defer></script>
+</head>
+<body>
+<div class="customer-page payment-page">
+    <header class="topbar">
+        <a class="brand" href="/home.html" aria-label="Style Maria home">
+            <span class="brand-mark">SM</span>
+            <span class="brand-divider" aria-hidden="true"></span>
+            <span>STYLE MARIA</span>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="/home.html">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-8H9v8H4a1 1 0 0 1-1-1v-9.5Z"/></svg>
+                </span><span>Home</span>
+            </a>
+            <a href="/customize-order.html">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L22 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+                </span><span>Custom Order</span>
+            </a>
+            <a href="/track-order.html" class="active" aria-current="page">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><path d="M9 4V2h6v2M8 9h2m4 0h2M8 13h2m4 0h2M8 17h2m4 0h2"/></svg>
+                </span><span>Track Order</span>
+            </a>
+        </nav>
+        <div class="account-menu">
+            <button class="account account-menu-trigger" id="account-menu-trigger"
+                    type="button" aria-expanded="false" aria-controls="account-menu">
+                <span class="account-badge" aria-hidden="true">
+                    <svg data-customer-photo-placeholder viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="3.5"/>
+                        <path d="M4 19c1.8-3 5-4.5 8-4.5S18.2 16 20 19"/>
+                    </svg>
+                    <img data-customer-photo alt="" hidden>
+                </span>
+                <span data-customer-name>Customer</span><span aria-hidden="true">▾</span>
+            </button>
+            <div class="account-menu-panel" id="account-menu" hidden>
+                <div class="account-menu-heading">
+                    <strong><span data-customer-account-name>Customer</span>'s Account</strong>
+                    <span>Manage your account</span>
+                </div>
+                <a class="account-menu-item account-logout-item" href="/logout"><span>Logout</span></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="payment-content">
+        <a class="payment-back-link" href="/track-order.html">← Back to My Orders</a>
+        <h1>Proceed to Payment</h1>
+        <p class="payment-page-intro">Complete your downpayment by following the instructions below.</p>
+        <p id="payment-loading" class="payment-loading" role="status">Loading your quotation…</p>
+        <div id="payment-error" class="custom-request-error" role="alert" hidden></div>
+
+        <section id="payment-content" class="payment-layout" hidden>
+            <aside class="payment-sidebar">
+                <section class="payment-panel payment-summary" aria-labelledby="payment-order-heading">
+                    <h2 id="payment-order-heading"><span aria-hidden="true">▤</span> Order Summary</h2>
+                    <dl>
+                        <div><dt>Request ID</dt><dd id="payment-order-id"></dd></div>
+                        <div><dt>Date Submitted</dt><dd id="payment-submitted"></dd></div>
+                        <div><dt>Dimensions (H × W)</dt><dd id="payment-dimensions"></dd></div>
+                        <div><dt>Frame Material</dt><dd id="payment-frame"></dd></div>
+                    </dl>
+                    <div class="payment-total-row">
+                        <strong>Quotation Amount</strong>
+                        <span id="payment-quote-total"></span>
+                    </div>
+                    <div class="payment-downpayment-box">
+                        <strong>Downpayment Required</strong>
+                        <b id="payment-downpayment"></b>
+                        <span>(40% of total amount)</span>
+                    </div>
+                    <p>The remaining balance will be discussed with you later.</p>
+                </section>
+
+                <section id="payment-reference-panel" class="payment-panel payment-reference-panel"
+                         aria-labelledby="payment-reference-heading" hidden>
+                    <h2 id="payment-reference-heading"><span aria-hidden="true">▧</span> Reference Image</h2>
+                    <img id="payment-reference-image" alt="Your custom mirror reference">
+                </section>
+            </aside>
+
+            <form id="payment-form" class="payment-main" enctype="multipart/form-data">
+                <section class="payment-panel payment-instructions">
+                    <h2><span aria-hidden="true">ⓘ</span> Payment Instructions</h2>
+                    <ol>
+                        <li>Scan the temporary QR shown for your chosen method; verify the recipient before paying.</li>
+                        <li>Pay the downpayment amount shown in your order summary.</li>
+                        <li>Enter the reference number from your transaction, if available.</li>
+                        <li>Upload a clear photo or screenshot of your e-receipt.</li>
+                        <li>Submit your proof for manual shop verification.</li>
+                    </ol>
+                </section>
+
+                <section class="payment-panel payment-methods">
+                    <h2><span aria-hidden="true">▣</span> Payment Method</h2>
+                    <div class="payment-method-options">
+                        <div class="payment-method-card">
+                            <div class="payment-method-header">
+                                <label class="payment-method-select">
+                                    <input type="radio" name="paymentMethod" value="GCash" required>
+                                    <span class="payment-method-name gcash-name">GCash</span>
+                                </label>
+                                <button class="payment-method-toggle" type="button"
+                                        aria-expanded="false" aria-controls="gcash-qr-panel"
+                                        aria-label="Show GCash QR code">
+                                    <span aria-hidden="true">⌄</span>
+                                </button>
+                            </div>
+                            <div class="payment-method-qr-panel" id="gcash-qr-panel" hidden>
+                                <img class="payment-method-qr" src="/image/qr1.png"
+                                     alt="Temporary QR code for GCash; verify the recipient before paying">
+                                <span class="payment-method-instructions">Temporary QR for all payment methods. Verify the recipient before paying.</span>
+                            </div>
+                        </div>
+                        <div class="payment-method-card">
+                            <div class="payment-method-header">
+                                <label class="payment-method-select">
+                                    <input type="radio" name="paymentMethod" value="Maya" required>
+                                    <span class="payment-method-name maya-name">Maya</span>
+                                </label>
+                                <button class="payment-method-toggle" type="button"
+                                        aria-expanded="false" aria-controls="maya-qr-panel"
+                                        aria-label="Show Maya QR code">
+                                    <span aria-hidden="true">⌄</span>
+                                </button>
+                            </div>
+                            <div class="payment-method-qr-panel" id="maya-qr-panel" hidden>
+                                <img class="payment-method-qr" src="/image/qr1.png"
+                                     alt="Temporary QR code for Maya; verify the recipient before paying">
+                                <span class="payment-method-instructions">Temporary QR for all payment methods. Verify the recipient before paying.</span>
+                            </div>
+                        </div>
+                        <div class="payment-method-card">
+                            <div class="payment-method-header">
+                                <label class="payment-method-select">
+                                    <input type="radio" name="paymentMethod" value="GoTyme" required>
+                                    <span class="payment-method-name gotyme-name">GoTyme</span>
+                                </label>
+                                <button class="payment-method-toggle" type="button"
+                                        aria-expanded="false" aria-controls="gotyme-qr-panel"
+                                        aria-label="Show GoTyme QR code">
+                                    <span aria-hidden="true">⌄</span>
+                                </button>
+                            </div>
+                            <div class="payment-method-qr-panel" id="gotyme-qr-panel" hidden>
+                                <img class="payment-method-qr" src="/image/qr1.png"
+                                     alt="Temporary QR code for GoTyme; verify the recipient before paying">
+                                <span class="payment-method-instructions">Temporary QR for all payment methods. Verify the recipient before paying.</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="payment-panel payment-details">
+                    <h2><span aria-hidden="true">▤</span> Payment Details</h2>
+                    <div class="payment-details-grid">
+                        <div class="payment-inputs">
+                            <label for="payment-reference">Reference Number </label>
+                            <input id="payment-reference" name="paymentReference" maxlength="100"
+                                   autocomplete="off" placeholder="Enter the reference number from your transaction">
+                            <label for="receipt" class="payment-upload-label">Upload E-Receipt <span>*</span></label>
+                            <div class="payment-upload-control">
+                                <label id="receipt-upload-label" for="receipt" class="payment-upload-box"
+                                       tabindex="0" aria-controls="receipt">
+                                    <span class="payment-upload-icon" aria-hidden="true">↑</span>
+                                    <span><strong>Click to upload or drag and drop</strong>
+                                        <small>PNG, JPG or PDF (Max 10MB)</small></span>
+                                    <span id="receipt-name" class="payment-upload-filename">No file selected</span>
+                                </label>
+                                <button id="remove-receipt" class="payment-remove-receipt" type="button"
+                                        aria-label="Remove selected receipt" title="Remove selected receipt" hidden>
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <input id="receipt" name="receipt" type="file"
+                                   accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+                                   required hidden>
+                        </div>
+                        <div class="payment-reminders">
+                            <strong><span aria-hidden="true">!</span> Important Reminders</strong>
+                            <ul>
+                                <li>Make sure the reference number is correct.</li>
+                                <li>Upload a clear and complete screenshot or photo of your e-receipt.</li>
+                                <li>Your payment will be verified manually by the shop.</li>
+                                <li>Submitting proof does not automatically confirm your transfer.</li>
+                            </ul>
+                            <label class="payment-confirmation">
+                                <input type="checkbox" name="termsConfirmed" value="true" required>
+                                <span>I confirm this proof is for the downpayment shown above.</span>
+                            </label>
+                            <p id="payment-feedback" role="status" aria-live="polite" hidden></p>
+                            <div class="payment-actions">
+                                <a class="payment-cancel-button" href="/track-order.html">Cancel</a>
+                                <button id="submit-payment" type="submit" class="primary-button" disabled>
+                                    Submit Payment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </form>
+
+            <div id="payment-already-submitted" class="payment-result" role="status" hidden>
+                Your payment proof has already been submitted and is awaiting shop verification.
+                <a href="/track-order.html">Return to My Orders</a>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

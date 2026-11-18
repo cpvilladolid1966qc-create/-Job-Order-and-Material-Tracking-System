@@ -1,0 +1,58 @@
+user_intent:
+  raw_request: "Add database-backed inventory and staff access, server-authorized APIs, and transactional/auditable order, payment-submission, and wastage workflows; keep existing DB customer/custom-order behavior, do not import browser-local records, and do not broaden into cloud/deployment work."
+  inferred_acceptance:
+    - "Inventory catalog, stock movement history, staff accounts, and business order state are server/database-backed."
+    - "Staff onboarding uses emailed invites with hashed, expiring, single-use tokens."
+    - "The existing database customer accounts, custom orders, and custom-order checkout rows continue to be used."
+    - "Mutations and their audit records are atomic."
+    - "The existing MySQL application and H2 test mode remain."
+    - "No existing browser-local staff or business-order values are imported."
+  cleanup_required: true
+strategy: minimal_runtime
+runtime_reachable:
+  - src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java
+  - src/main/resources/schema.sql
+  - src/main/resources/static/admin.html
+  - src/main/resources/static/reports.html
+  - src/main/resources/static/inventory.html
+  - src/main/resources/static/pos.html
+  - src/main/resources/static/wastage.html
+  - src/main/resources/static/js/store.js
+  - src/main/resources/static/js/custom-request-detail.js
+must_rewrite:
+  - path: src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java
+    reason: "Current auth/interceptor, wastage and custom-order APIs, JDBC writes, and transaction annotations are colocated here; replace local actor trust and add database-backed role-gated operations/audit boundaries. Extracting focused components is acceptable, but preserve existing route behavior."
+  - path: src/main/resources/schema.sql
+    reason: "Current schema lacks inventory catalog/movement, staff/invite, general business-order, and audit persistence; additive MySQL/H2-compatible definitions are required."
+  - path: src/main/resources/static/admin.html
+    reason: "Hosts dashboard business-order surfaces that must display server-backed data."
+  - path: src/main/resources/static/reports.html
+    reason: "Hosts the existing staff directory/editor dialog that currently reads and writes browser-local data."
+  - path: src/main/resources/static/inventory.html
+    reason: "Current catalog table is empty and page actions are client/DOM-only; wire CRUD, movement, and history UI to secured APIs."
+  - path: src/main/resources/static/pos.html
+    reason: "Current POS order/payment state is browser-local; replace it with server-backed operational orders."
+  - path: src/main/resources/static/wastage.html
+    reason: "Remove client authority for loggedBy and connect authenticated wastage submission to stock ledger/audit results."
+  - path: src/main/resources/static/js/store.js
+    reason: "Contains the staff, inventory, wastage, POS, and dashboard state handlers; remove localStorage for staff and business orders and replace DOM-only inventory actions with server API calls."
+  - path: src/main/resources/static/js/custom-request-detail.js
+    reason: "Admin order detail UI must expose server-backed payment verification/operational actions without weakening existing quote handling."
+copy_as_is:
+  - path: src/main/resources/static/js/customize-order.js
+    reason: "Existing customer custom-order request API can remain stable."
+  - path: src/main/resources/static/js/payment.js
+    reason: "Existing customer checkout route remains stable; only adjust if a verified contract change requires it."
+  - path: src/main/resources/static/js/track-order.js
+    reason: "Existing customer-owned tracking routes remain stable."
+legacy_allowed_to_remain:
+  - path: src/main/resources/static/auto-bom.html
+    reason: "Static mirror calculator is outside the inventory/order persistence boundary."
+  - path: browser localStorage values under styleMariaStaff, styleMariaPosOrders, and styleMariaDashboardOrders
+    reason: "They are intentionally not imported; after the UI stops reading/writing them, dormant browser values may remain unused."
+defer_cleanup:
+  - "No full controller/package reorganization is required; any extraction should be limited to the affected runtime behavior."
+  - "No cleanup or import of dormant browser keys is required; keep them unused and do not promote them to a compatibility source."
+full_rewrite_reason: null
+implementation_rule: >
+  Scope is the affected runtime files listed in must_rewrite plus any focused new backend classes needed by those routes. Do not infer scope from every source anchor. Preserve all existing DB customer/custom-order rows and stable customer routes; do not import browser-local staff/business-order data. Keep SQL compatible with MySQL and the existing H2 MySQL-mode test profile.

@@ -1,0 +1,27 @@
+unit: admin-order-workflow
+bindings:
+  - type: annotation
+    name: "@RestController @RequestMapping(\"/api/v1/admin/custom-orders\")"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:993"
+    target: "AdminCustomOrderController"
+    must_appear_in_target: true
+    notes: "Admin review, detail, media, quote, and status routes."
+  - type: route-declaration
+    name: "GET list/detail/reference-image/payment-proof; PUT status/quote-draft; POST publish-quote"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1007"
+    target: "AdminCustomOrderController"
+    must_appear_in_target: true
+    notes: "Current routes are guarded by DemoRoleInterceptor; add separate payment-verification and permitted staff operational status behavior without changing quote authority."
+  - type: filter
+    name: "DemoRoleInterceptor prefix rule for /api/v1/admin/custom-orders"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:764"
+    target: "Admin custom-order APIs"
+    must_appear_in_target: true
+    notes: "Authorization must be enforced server-side for each request; target API denial should be an explicit 401/403."
+  - type: annotation
+    name: "Admin HTML and shared store.js order controls"
+    source_loc: "src/main/resources/static/admin.html:9"
+    target: "Dashboard order and custom request UI"
+    must_appear_in_target: true
+    notes: "Dashboard-order values are currently localStorage-backed; use DB-backed data while preserving custom-order table data."
+runtime_config: []

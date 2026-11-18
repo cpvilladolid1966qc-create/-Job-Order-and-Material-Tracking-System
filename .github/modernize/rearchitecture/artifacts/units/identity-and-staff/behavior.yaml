@@ -1,0 +1,42 @@
+unit: identity-and-staff
+side_effects:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:131"
+    effect: "Successful login invalidates any prior session, creates a new HttpSession, and stores the authenticated role; customer login also loads customer identity into the session."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:374"
+    effect: "Customer signup persists a customer account and credential hash in customer_accounts."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:410"
+    effect: "Password-reset request creates a hashed, expiring token and sends a reset email when a customer account is eligible."
+    must_preserve: true
+branches:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:141"
+    condition: "credentials match configured admin bootstrap"
+    behavior: "authenticate ADMIN and redirect to /admin.html."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:147"
+    condition: "credentials match a customer account"
+    behavior: "authenticate USER, load account identity, and redirect to /home.html."
+    must_preserve: true
+  - source_loc: "src/main/resources/static/js/store.js:457"
+    condition: "admin opens staff management in current UI"
+    behavior: "current staff list/editor reads and writes browser-local styleMariaStaff; no server staff API exists."
+    must_preserve: false
+error_paths:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:131"
+    trigger: "invalid or absent login credential"
+    outcome: "redirect to /?error=invalid without disclosing whether account exists."
+    contract: "HTTP redirect to the static login page."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:162"
+    trigger: "customer account disappears between authentication and loading its profile"
+    outcome: "remove role/customer/name session attributes and redirect as invalid credentials."
+    contract: "HTTP redirect to /?error=invalid."
+    must_preserve: true
+concurrency:
+  model: sync
+  tx_boundary:
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:217"
+    scope: "Current customer profile update and password reset have transaction annotations; customer login/session creation and current browser-only staff management do not share a transaction."
+    isolation: "Database default; not explicitly configured."
+    must_preserve: true

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verify Email | Style Maria</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/store.js" defer></script>
+</head>
+<body class="login-page">
+<header class="topbar">
+    <a class="logo" href="/" aria-label="Style Maria home">SM</a>
+    <div class="brand-name">STYLE MARIA</div>
+</header>
+<main class="login-layout">
+    <section class="intro">
+        <p class="eyebrow">CUSTOMER ACCOUNT</p>
+        <h1>Verify your email.</h1>
+        <p class="intro-subtitle">A verified email helps protect your account and lets us contact you about your orders.</p>
+    </section>
+    <section class="login-card">
+        <form id="verification-confirm-form" action="/verify-email" method="post" hidden>
+            <input id="verification-token" name="token" type="hidden">
+            <h2>Confirm your email</h2>
+            <p class="card-subtitle">Select the button below to verify this email address and activate your account.</p>
+            <button class="sign-in-button" type="submit">Verify email</button>
+        </form>
+        <h2 id="verification-resend-title">Resend verification link</h2>
+        <p class="card-subtitle" id="verification-resend-description">
+            Enter the email you used to register. Verification links expire after 24 hours.
+        </p>
+        <form id="verification-resend-form" action="/resend-verification" method="post">
+            <label for="verification-email">Email address</label>
+            <input id="verification-email" name="email" type="email" autocomplete="email"
+                   maxlength="254" placeholder="Enter your account email" required>
+            <p class="success-message" id="verification-sent" role="status" hidden>
+                If that address has an account waiting for verification, a new link will be sent.
+            </p>
+            <p class="error-message" id="verification-delivery-error" role="alert" hidden>
+                We couldn’t send a verification email right now. Please try again later.
+            </p>
+            <p class="error-message" id="verification-invalid" role="alert" hidden>
+                That verification link is invalid, expired, or already used. Request a new one below.
+            </p>
+            <button class="sign-in-button" type="submit">Send verification link</button>
+            <a class="forgot-password-link" href="/">Back to sign in</a>
+        </form>
+    </section>
+</main>
+</body>
+</html>

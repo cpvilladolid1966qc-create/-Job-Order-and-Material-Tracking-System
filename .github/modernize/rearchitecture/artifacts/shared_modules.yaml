@@ -1,0 +1,116 @@
+modules:
+  - name: application-monolith
+    kind: god-class
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:73"
+    used_by_units:
+      - identity-and-staff
+      - customer-custom-orders
+      - admin-order-workflow
+      - wastage-workflow
+    fields:
+      - name: StylemariaApplication.main
+        type: "static void main(String[] args)"
+      - name: DemoAuthController.login
+        type: "String login(String username, String password, HttpServletRequest request)"
+      - name: DemoAuthController.customerProfile
+        type: "ResponseEntity<Map<String,String>> customerProfile(HttpSession session)"
+      - name: DemoAuthController.signup
+        type: "String signup(...)"
+      - name: CustomerCustomOrderController
+        type: "Spring MVC REST controller; customer-scoped SQL reads"
+      - name: CustomOrderController.submitRequest
+        type: "ResponseEntity<?> multipart custom-order request"
+      - name: CustomOrderController.submitCheckout
+        type: "ResponseEntity<?> multipart payment submission"
+      - name: AdminCustomOrderController
+        type: "Spring MVC REST controller; admin quote/status operations"
+      - name: WastageController.getLogs
+        type: "List<WastageLog> database read"
+      - name: WastageController.createLog
+        type: "ResponseEntity<?> transactional database insert"
+      - name: DemoRoleInterceptor
+        type: "HandlerInterceptor role/page/API path checks"
+      - name: DemoWebConfig
+        type: "WebMvcConfigurer interceptor registration"
+    god_class: true
+    split_candidate: true
+    migration_strategy: split
+    notes: "One source file mixes unrelated controllers, configuration, migration runners, records, and business logic. Candidate extraction should follow the six units and preserve existing route/session behavior; this is not a mandate for a full rewrite."
+
+  - name: shared-store-runtime
+    kind: utility
+    source_loc: "src/main/resources/static/js/store.js:1"
+    used_by_units:
+      - identity-and-staff
+      - customer-custom-orders
+      - admin-order-workflow
+      - inventory-management
+      - wastage-workflow
+      - pos-sales
+    fields:
+      - name: staff-local-state
+        type: "styleMariaStaff browser localStorage read/write"
+      - name: inventory-page-handler
+        type: "DOM row filtering and page-local stock-in/reversal handlers"
+      - name: wastage-page-handler
+        type: "GET/POST /api/v1/wastage browser client"
+      - name: pos-order-state
+        type: "styleMariaPosOrders browser localStorage state"
+      - name: dashboard-order-state
+        type: "styleMariaDashboardOrders browser localStorage state"
+      - name: customer-profile-ui
+        type: "customer profile fetch/update browser client"
+    god_class: true
+    split_candidate: true
+    migration_strategy: split
+    notes: "A shared page-initialization script branches on DOM presence and mixes unrelated screens. Update only the required feature handlers; avoid expanding work into the mirror calculator or unrelated page behavior."
+
+  - name: shared-schema-bootstrap
+    kind: config
+    source_loc: "src/main/resources/schema.sql:1"
+    used_by_units:
+      - identity-and-staff
+      - customer-custom-orders
+      - admin-order-workflow
+      - inventory-management
+      - wastage-workflow
+      - pos-sales
+    fields:
+      - name: customer_accounts
+        type: "MySQL/H2-compatible SQL table"
+      - name: password_reset_tokens
+        type: "MySQL/H2-compatible SQL table with customer FK"
+      - name: custom_orders
+        type: "MySQL/H2-compatible SQL table with unique order_id"
+      - name: custom_order_checkouts
+        type: "MySQL/H2-compatible SQL table with order FK"
+      - name: wastage_logs
+        type: "MySQL/H2-compatible SQL table"
+      - name: schema.sql
+        type: "spring.sql.init.mode=always schema initialization"
+    god_class: false
+    split_candidate: false
+    migration_strategy: wrap
+    notes: "Existing schema is shared persistence state and must remain additive/compatible; new inventory, staff, and audit tables are not present today."
+
+  - name: global-static-styles
+    kind: utility
+    source_loc: "src/main/resources/static/css/style.css:1"
+    used_by_units:
+      - identity-and-staff
+      - customer-custom-orders
+      - admin-order-workflow
+      - inventory-management
+      - wastage-workflow
+      - pos-sales
+    fields:
+      - name: admin-layout
+        type: "shared workshop navigation/content styles"
+      - name: form-controls
+        type: "shared static-page form styles"
+      - name: table-layout
+        type: "shared admin/customer table styles"
+    god_class: false
+    split_candidate: false
+    migration_strategy: copy
+    notes: "Shared presentation stylesheet; modify only when new workflow UI requires it."

@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Maria Workshop | Sign In</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/store.js?v=email-verification-20261105" defer></script>
+</head>
+<body class="login-page">
+
+<header class="topbar">
+    <a class="logo" href="/" aria-label="Style Maria home">SM</a>
+    <div class="brand-name">STYLE MARIA</div>
+</header>
+
+<main class="login-layout">
+
+    <section class="intro">
+        <p class="eyebrow">STYLE MARIA WORKSHOP</p>
+        <h1>Order with clarity.</h1>
+        <p class="intro-subtitle">
+            Sign in or create an account to request a custom mirror and manage your orders.
+        </p>
+        <p class="intro-note">
+            Sign in or create an account before adding items to cart,
+            checking out, or paying.
+        </p>
+    </section>
+
+    <section class="login-card">
+        <div class="auth-tabs" role="tablist" aria-label="Account access">
+            <button class="auth-tab is-active" id="show-sign-in" type="button"
+                    role="tab" aria-selected="true" aria-controls="sign-in-panel">Sign in</button>
+            <button class="auth-tab" id="show-sign-up" type="button"
+                    role="tab" aria-selected="false" aria-controls="sign-up-panel">Create account</button>
+        </div>
+
+        <section id="sign-in-panel" role="tabpanel" aria-labelledby="show-sign-in">
+            <h2>Welcome back</h2>
+            <p class="card-subtitle">Sign in to continue to your Style Maria account.</p>
+
+            <form action="/login" method="post">
+            <label for="email">Email address</label>
+            <input
+                type="email"
+                id="email"
+                name="username"
+                autocomplete="username"
+                placeholder="Enter your email"
+                required>
+
+            <label for="password">Password</label>
+            <div class="password-field">
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    placeholder="Enter your password"
+                    required>
+                <button class="password-visibility-toggle" id="password-visibility-toggle"
+                        type="button" aria-label="Show password" aria-pressed="false">
+                    <svg class="password-eye-icon" aria-hidden="true" viewBox="0 0 24 24">
+                        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path class="password-eye-slash" d="M4 4l16 16"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <p class="error-message" id="login-error" hidden>
+                Invalid email or password. Please try again.
+            </p>
+
+            <p class="error-message" id="login-unverified" hidden>
+                Verify your email before signing in. <a href="/verify-email.html">Resend the verification email</a>.
+            </p>
+
+            <p class="error-message" id="verification-invalid" hidden>
+                That verification link is invalid, expired, or already used. <a href="/verify-email.html">Request another link</a>.
+            </p>
+
+            <p class="success-message" id="login-logout" hidden>
+                You have signed out successfully.
+            </p>
+
+            <p class="success-message" id="signup-success" role="status" hidden>
+                Check your email and open the verification link before signing in.
+            </p>
+
+            <p class="success-message" id="email-verified-success" role="status" hidden>
+                Your email is verified. You can now sign in.
+            </p>
+
+            <p class="success-message" id="password-reset-success" role="status" hidden>
+                Your password was reset. Sign in with your new password.
+            </p>
+
+            <p class="error-message" id="login-unauthorized" hidden>
+                Sign in with the correct account type to access that page.
+            </p>
+
+            <button type="submit" class="sign-in-button">
+                Sign in
+            </button>
+            <a class="forgot-password-link" href="/forgot-password.html">Forgot password?</a>
+            </form>
+        </section>
+
+        <section id="sign-up-panel" role="tabpanel" aria-labelledby="show-sign-up" hidden>
+            <h2>Create your account</h2>
+            <p class="card-subtitle">Register to request and track your custom mirror orders.</p>
+
+            <form action="/signup" method="post">
+                <label for="signup-name">Full name</label>
+                <input id="signup-name" name="fullName" type="text" autocomplete="name"
+                       maxlength="100" placeholder="Enter your full name" required>
+
+                <label for="signup-email">Email address</label>
+                <input id="signup-email" name="email" type="email" autocomplete="email"
+                       maxlength="254" placeholder="Enter your email" required>
+
+                <label for="signup-password">Password</label>
+                <div class="password-field">
+                    <input id="signup-password" name="password" type="password"
+                           autocomplete="new-password" minlength="12" maxlength="128"
+                           placeholder="Create a password (12+ characters)" required>
+                    <button class="password-visibility-toggle" type="button"
+                            aria-label="Show password" aria-pressed="false"
+                            data-toggle-password="signup-password">
+                        <svg class="password-eye-icon" aria-hidden="true" viewBox="0 0 24 24">
+                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path class="password-eye-slash" d="M4 4l16 16"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <label for="signup-confirm-password">Confirm password</label>
+                <div class="password-field">
+                    <input id="signup-confirm-password" name="confirmPassword" type="password"
+                           autocomplete="new-password" minlength="12" maxlength="128"
+                           placeholder="Re-enter your password" required>
+                    <button class="password-visibility-toggle" type="button"
+                            aria-label="Show password" aria-pressed="false"
+                            data-toggle-password="signup-confirm-password">
+                        <svg class="password-eye-icon" aria-hidden="true" viewBox="0 0 24 24">
+                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path class="password-eye-slash" d="M4 4l16 16"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <p class="error-message" id="signup-error" role="alert" hidden>
+                    We couldn’t create your account. Check your details and try again.
+                </p>
+                <button type="submit" class="sign-in-button">Create account</button>
+            </form>
+        </section>
+
+    </section>
+
+</main>
+
+</body>
+</html>

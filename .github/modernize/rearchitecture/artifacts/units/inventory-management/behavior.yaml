@@ -1,0 +1,29 @@
+unit: inventory-management
+side_effects:
+  - source_loc: "src/main/resources/static/js/store.js:753"
+    effect: "Current stock-in action mutates the selected HTML row's quantity/status/date only in the open browser page; it sends no API request."
+    must_preserve: false
+  - source_loc: "src/main/resources/static/js/store.js:779"
+    effect: "Current reversal form displays a toast and explicitly does not change server stock."
+    must_preserve: false
+branches:
+  - source_loc: "src/main/resources/static/inventory.html:114"
+    condition: "page initializes with its current materials tbody empty"
+    behavior: "The page displays an empty-state message and zero materials until markup is supplied; there is no server catalog fetch."
+    must_preserve: false
+  - source_loc: "src/main/resources/static/js/store.js:735"
+    condition: "search/category/status filters change"
+    behavior: "Filter existing DOM rows in memory; current low-stock classification compares quantity with data-low-stock."
+    must_preserve: true
+  - source_loc: "src/main/resources/static/js/store.js:760"
+    condition: "stock-in form has no selected row or quantity is not a positive whole number"
+    behavior: "show a client toast and do not modify the row."
+    must_preserve: false
+error_paths:
+  - source_loc: "src/main/resources/static/js/store.js:760"
+    trigger: "invalid or absent stock-in form values"
+    outcome: "client-only toast; no server status or persisted record."
+    contract: "No HTTP contract currently exists."
+    must_preserve: false
+concurrency:
+  model: sync

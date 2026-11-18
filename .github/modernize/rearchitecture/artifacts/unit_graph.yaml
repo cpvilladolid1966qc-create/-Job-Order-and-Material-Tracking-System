@@ -1,0 +1,173 @@
+units:
+  - name: identity-and-staff
+    trigger: page
+    trigger_detail: "POST /login, /signup, /forgot-password, /reset-password; GET /logout; admin staff management embedded in /reports.html; planned staff invitation API"
+    source_anchors:
+      - path: src/main/resources/static/index.html
+        line: 44
+      - path: src/main/resources/static/forgot-password.html
+      - path: src/main/resources/static/reset-password.html
+      - path: src/main/resources/static/reports.html
+        line: 123
+    exported_signature:
+      - method: "String DemoAuthController.login(String username, String password, HttpServletRequest request)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:131"
+        stability: must_preserve
+      - method: "ResponseEntity<Map<String,String>> DemoAuthController.customerProfile(HttpSession session)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:171"
+        stability: must_preserve
+      - method: "String DemoAuthController.signup(...)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:374"
+        stability: must_preserve
+    dynamic_entrypoints:
+      - target: "DemoAuthController"
+        mechanism: annotation-scan
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:81"
+    depends_on: []
+    shared_refs:
+      - module: application-monolith
+        used_fields: [DemoAuthController.login, DemoAuthController.customerProfile, DemoAuthController.signup, DemoRoleInterceptor]
+      - module: shared-schema-bootstrap
+        used_fields: [customer_accounts, password_reset_tokens]
+      - module: shared-store-runtime
+        used_fields: [staff-local-state]
+      - module: global-static-styles
+        used_fields: [admin-layout, form-controls]
+
+  - name: customer-custom-orders
+    trigger: api
+    trigger_detail: "GET /api/v1/customer/custom-orders; GET /api/v1/customer/custom-orders/{requestId}; GET customer reference image; GET /api/v1/custom-orders/quote; POST /api/v1/custom-orders; POST /api/v1/custom-orders/{orderId}/checkout; POST /api/v1/custom-orders/checkout"
+    source_anchors:
+      - path: src/main/resources/static/customize-order.html
+        line: 201
+      - path: src/main/resources/static/js/customize-order.js
+      - path: src/main/resources/static/js/payment.js
+      - path: src/main/resources/static/track-order.html
+      - path: src/main/resources/static/js/track-order.js
+    exported_signature:
+      - method: "ResponseEntity<?> CustomerCustomOrderController.listOrders(HttpSession session)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:827"
+        stability: frozen
+      - method: "ResponseEntity<?> CustomOrderController.submitRequest(...)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1512"
+        stability: frozen
+      - method: "ResponseEntity<?> CustomOrderController.submitCheckout(...)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1588"
+        stability: frozen
+      - method: "ResponseEntity<?> CustomOrderController.placeDemoOrder(...)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1648"
+        stability: frozen
+    dynamic_entrypoints:
+      - target: "CustomerCustomOrderController"
+        mechanism: annotation-scan
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:817"
+      - target: "CustomOrderController"
+        mechanism: annotation-scan
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1490"
+    depends_on: []
+    shared_refs:
+      - module: application-monolith
+        used_fields: [CustomerCustomOrderController, CustomOrderController.submitRequest, CustomOrderController.submitCheckout]
+      - module: shared-schema-bootstrap
+        used_fields: [customer_accounts, custom_orders, custom_order_checkouts]
+      - module: shared-store-runtime
+        used_fields: [customer-profile-ui]
+      - module: global-static-styles
+        used_fields: [admin-layout, form-controls, table-layout]
+
+  - name: admin-order-workflow
+    trigger: api
+    trigger_detail: "GET /api/v1/admin/custom-orders and detail/image/payment-proof routes; PUT status and quote-draft; POST publish-quote; admin dashboard order controls"
+    source_anchors:
+      - path: src/main/resources/static/admin.html
+        line: 241
+      - path: src/main/resources/static/Custom-req.html
+      - path: src/main/resources/static/custom-request-detail.html
+        line: 107
+      - path: src/main/resources/static/js/custom-request-detail.js
+    exported_signature:
+      - method: "List<CustomOrderSummary> AdminCustomOrderController.listRequests()"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1007"
+        stability: must_preserve
+      - method: "ResponseEntity<?> AdminCustomOrderController.updateRequest(String requestId, AdminCustomOrderUpdate update)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1122"
+        stability: may_change
+      - method: "ResponseEntity<?> AdminCustomOrderController.publishOfficialQuote(String requestId, AdminQuoteRequest quote)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1185"
+        stability: must_preserve
+    dynamic_entrypoints:
+      - target: "AdminCustomOrderController"
+        mechanism: annotation-scan
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:993"
+    depends_on: []
+    shared_refs:
+      - module: application-monolith
+        used_fields: [AdminCustomOrderController, DemoRoleInterceptor]
+      - module: shared-schema-bootstrap
+        used_fields: [custom_orders, custom_order_checkouts]
+      - module: shared-store-runtime
+        used_fields: [dashboard-order-state]
+      - module: global-static-styles
+        used_fields: [admin-layout, table-layout]
+
+  - name: inventory-management
+    trigger: page
+    trigger_detail: "GET /inventory.html materials catalog, stock movement actions, and movement history; backend inventory API does not yet exist"
+    source_anchors:
+      - path: src/main/resources/static/inventory.html
+        line: 114
+    exported_signature: []
+    dynamic_entrypoints: []
+    depends_on: []
+    shared_refs:
+      - module: shared-store-runtime
+        used_fields: [inventory-page-handler]
+      - module: shared-schema-bootstrap
+        used_fields: [schema.sql]
+      - module: global-static-styles
+        used_fields: [admin-layout, table-layout]
+
+  - name: wastage-workflow
+    trigger: api
+    trigger_detail: "GET/POST /api/v1/wastage (also /api/wastage) and /wastage.html"
+    source_anchors:
+      - path: src/main/resources/static/wastage.html
+        line: 74
+    exported_signature:
+      - method: "List<WastageLog> WastageController.getLogs()"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1327"
+        stability: must_preserve
+      - method: "ResponseEntity<?> WastageController.createLog(WastageRequest request)"
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1355"
+        stability: may_change
+    dynamic_entrypoints:
+      - target: "WastageController"
+        mechanism: annotation-scan
+        source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1306"
+    depends_on: []
+    shared_refs:
+      - module: application-monolith
+        used_fields: [WastageController.getLogs, WastageController.createLog, DemoRoleInterceptor]
+      - module: shared-store-runtime
+        used_fields: [wastage-page-handler]
+      - module: shared-schema-bootstrap
+        used_fields: [wastage_logs, schema.sql]
+      - module: global-static-styles
+        used_fields: [admin-layout, form-controls, table-layout]
+
+  - name: pos-sales
+    trigger: page
+    trigger_detail: "GET /pos.html pending-order, cart, payment, and completion workflows; currently browser-local with no server API"
+    source_anchors:
+      - path: src/main/resources/static/pos.html
+        line: 77
+    exported_signature: []
+    dynamic_entrypoints: []
+    depends_on: []
+    shared_refs:
+      - module: shared-store-runtime
+        used_fields: [pos-order-state]
+      - module: shared-schema-bootstrap
+        used_fields: [schema.sql]
+      - module: global-static-styles
+        used_fields: [admin-layout, form-controls, table-layout]

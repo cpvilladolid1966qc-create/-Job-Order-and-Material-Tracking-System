@@ -1,0 +1,263 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Maria | Customer Home</title>
+    <script src="/js/store.js?v=profile-photo-nav-20261026" defer></script>
+    <link rel="stylesheet" href="/css/style.css?v=profile-photo-nav-20261026">
+</head>
+<body>
+    <div class="customer-page">
+        <header class="topbar">
+            <a class="brand" href="/home.html" aria-label="Style Maria home">
+                <span class="brand-mark">SM</span>
+                <span class="brand-divider" aria-hidden="true"></span>
+                <span>STYLE MARIA</span>
+            </a>
+
+            <nav class="main-nav" aria-label="Main navigation">
+                <a href="/home.html" class="home-link active">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-8H9v8H4a1 1 0 0 1-1-1v-9.5Z" fill="currentColor" stroke="none"></path>
+                        </svg>
+                    </span>
+                    <span>Home</span>
+                </a>
+                <a href="/customize-order.html">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.4L22 8H6"></path>
+                            <circle cx="10" cy="20" r="1"></circle>
+                            <circle cx="18" cy="20" r="1"></circle>
+                        </svg>
+                    </span>
+                    <span>Custom Order</span>
+                </a>
+                <a href="/track-order.html">
+                    <span class="nav-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="5" y="4" width="14" height="17" rx="1"></rect>
+                            <path d="M9 4V2h6v2M8 9h2m4 0h2M8 13h2m4 0h2M8 17h2m4 0h2"></path>
+                        </svg>
+                    </span>
+                    <span>Track Order</span>
+                </a>
+            </nav>
+
+            <div class="account-menu">
+                <button class="account account-menu-trigger" id="account-menu-trigger"
+                        type="button" aria-expanded="false" aria-controls="account-menu">
+                    <span class="account-badge" aria-hidden="true">
+                        <svg data-customer-photo-placeholder viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="3.5"></circle>
+                            <path d="M4 19c1.8-3 5-4.5 8-4.5S18.2 16 20 19"></path>
+                        </svg>
+                        <img data-customer-photo alt="" hidden>
+                    </span>
+                    <span data-customer-name>Customer</span>
+                    <span aria-hidden="true">▾</span>
+                </button>
+                <div class="account-menu-panel" id="account-menu" hidden>
+                    <div class="account-menu-heading">
+                        <strong><span data-customer-account-name>Customer</span>'s Account</strong>
+                        <span>Manage your account</span>
+                    </div>
+                    <p class="account-menu-message" id="profile-settings-feedback" role="status" aria-live="polite" hidden></p>
+                    <button class="account-menu-item" id="profile-settings" type="button">
+                        <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M5 21a7 7 0 0 1 14 0"></path>
+                        </svg>
+                        <span>Profile Settings</span>
+                    </button>
+                    <a class="account-menu-item account-logout-item" href="/logout">
+                        <svg aria-hidden="true" viewBox="0 0 24 24">
+                            <path d="M10 17l5-5-5-5M15 12H3"></path>
+                            <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"></path>
+                        </svg>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <dialog class="profile-settings-dialog" id="profile-settings-dialog" aria-labelledby="profile-settings-title">
+            <form id="profile-settings-form">
+                <header class="profile-settings-page-heading">
+                    <div>
+                        <h2 id="profile-settings-title">Profile Settings</h2>
+                        <p>Manage your personal information, account details, and password.</p>
+                    </div>
+                    <button class="profile-settings-close" type="button" data-close-profile-settings
+                            aria-label="Close profile settings">&times;</button>
+                </header>
+
+                <section class="profile-settings-card">
+                    <div class="profile-settings-card-heading">
+                        <h3>Profile Information</h3>
+                        <p>Update your name and profile photo.</p>
+                    </div>
+                    <div class="profile-information-grid">
+                        <div class="profile-photo-field">
+                            <div class="profile-photo-preview" id="profile-photo-preview">
+                                <svg id="profile-photo-placeholder" aria-hidden="true" viewBox="0 0 64 64">
+                                    <circle cx="32" cy="22" r="11"></circle>
+                                    <path d="M10 58c2-13 10-20 22-20s20 7 22 20"></path>
+                                </svg>
+                                <img id="profile-photo-image" alt="Your profile photo" hidden>
+                            </div>
+                            <div class="profile-photo-controls">
+                                <label class="profile-photo-button" for="profile-photo-input">Change Photo</label>
+                                <input class="visually-hidden" id="profile-photo-input" name="profilePhoto"
+                                       type="file" accept="image/jpeg,image/png">
+                                <small>JPG or PNG, up to 2 MB</small>
+                            </div>
+                        </div>
+                        <div class="profile-information-fields">
+                            <label for="profile-full-name">Full Name
+                                <input id="profile-full-name" name="fullName" type="text"
+                                       maxlength="100" autocomplete="name" required>
+                            </label>
+                            <label for="profile-email">Email Address
+                                <input id="profile-email" name="email" type="email"
+                                       maxlength="254" autocomplete="email" required>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="profile-settings-card">
+                    <div class="profile-settings-card-heading">
+                        <h3>Contact Information</h3>
+                        <p>Keep your contact details up to date.</p>
+                    </div>
+                    <div class="profile-contact-grid">
+                        <label for="profile-phone">Phone Number
+                            <input id="profile-phone" name="phone" type="tel"
+                                   maxlength="40" autocomplete="tel">
+                        </label>
+                        <label for="profile-address">Address
+                            <textarea id="profile-address" name="address" maxlength="500"
+                                      autocomplete="street-address" rows="2"></textarea>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="profile-settings-card profile-password-card">
+                    <div class="profile-settings-card-heading">
+                        <h3>Change Password</h3>
+                        <p>Update your password to keep your account secure.</p>
+                    </div>
+                    <div class="profile-password-grid">
+                        <div class="profile-password-fields">
+                            <label for="profile-current-password">Current Password
+                                <input id="profile-current-password" name="currentPassword" type="password"
+                                       autocomplete="current-password" required>
+                            </label>
+                            <label for="profile-new-password">New Password
+                                <input id="profile-new-password" name="newPassword" type="password"
+                                       minlength="12" maxlength="128" autocomplete="new-password">
+                            </label>
+                            <label for="profile-confirm-password">Confirm New Password
+                                <input id="profile-confirm-password" name="confirmPassword" type="password"
+                                       minlength="12" maxlength="128" autocomplete="new-password">
+                            </label>
+                        </div>
+                        <aside class="profile-password-requirements">
+                            <strong>Password Requirements</strong>
+                            <ul>
+                                <li>At least 12 characters</li>
+                                <li>Leave new password fields blank to keep your current password</li>
+                            </ul>
+                        </aside>
+                    </div>
+                </section>
+
+                <p class="profile-settings-message" id="profile-settings-form-message"
+                   role="status" aria-live="polite" hidden></p>
+                <div class="profile-settings-actions">
+                    <button class="profile-settings-cancel" type="button" data-close-profile-settings>Cancel</button>
+                    <button class="sign-in-button" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </dialog>
+
+        <main class="page-shell">
+            <section class="hero" aria-label="Custom mirror hero section">
+                <div class="hero-copy">
+                    <p class="eyebrow">Custom-made Mirrors</p>
+                    <h1>Custom Mirrors Crafted for Your Space.</h1>
+                    <p class="sub">
+                        At Style Maria, we create custom mirrors based on your preferred design, size, and frame finish — made to fit your space and style.
+                    </p>
+                    <a class="cta" href="/customize-order.html">
+                        <span class="icon" aria-hidden="true">✦</span>
+                        <span>Customize Your Mirror</span>
+                        <span class="arrow" aria-hidden="true">→</span>
+                    </a>
+                </div>
+
+                <div class="hero-visual" style="--hero-image: url('/image/m1.png')" aria-hidden="true">
+                    <div class="window-glow"></div>
+                    <div class="mirror-scene">
+                        <div class="vase">
+                            <div class="plant">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="lamp">
+                            <div class="lamp-glow"></div>
+                        </div>
+                        <div class="mirror-frame">
+                            <div class="mirror-panel"></div>
+                        </div>
+                        <div class="dot-nav">
+                            <span class="active"></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="gallery-wrap" aria-label="Finished custom mirrors gallery">
+                <div class="section-label">Our Work</div>
+                <div class="gallery-header">
+                    <h2>Finished Custom Mirrors</h2>
+                    <a class="see-all" href="/see-all.html">See All →</a>
+                </div>
+                <p class="subtitle">A look at some of the custom mirrors we’ve crafted for our clients.</p>
+
+                <div class="gallery-grid" id="finished-mirror-gallery" tabindex="-1"
+                     aria-label="Finished custom mirror photos">
+                    <article class="gallery-card" aria-label="Large custom mirror design">
+                        <div class="card-visual" style="--card-image: url('/image/m2.png')">
+                            <div class="shape shape-a"></div>
+                        </div>
+                    </article>
+                    <article class="gallery-card" aria-label="Tall custom mirror design">
+                        <div class="card-visual" style="--card-image: url('/image/m3.png')">
+                            <div class="shape shape-b"></div>
+                        </div>
+                    </article>
+                    <article class="gallery-card" aria-label="Tonal custom mirror design">
+                        <div class="card-visual" style="--card-image: url('/image/m4.png')">
+                            <div class="shape shape-c"></div>
+                        </div>
+                    </article>
+                    <article class="gallery-card" aria-label="Decorative custom mirror design">
+                        <div class="card-visual" style="--card-image: url('/image/m5.png')">
+                            <div class="shape shape-a"></div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

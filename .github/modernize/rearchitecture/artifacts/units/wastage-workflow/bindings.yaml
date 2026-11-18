@@ -1,0 +1,27 @@
+unit: wastage-workflow
+bindings:
+  - type: annotation
+    name: "@RestController @RequestMapping({\"/api/wastage\", \"/api/v1/wastage\"})"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1306"
+    target: "WastageController"
+    must_appear_in_target: true
+    notes: "Keep both current aliases unless compatibility is explicitly verified unnecessary."
+  - type: route-declaration
+    name: "GET/POST /api/v1/wastage"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1327"
+    target: "WastageController"
+    must_appear_in_target: true
+    notes: "Add STAFF to authorization; ignore/remove caller authority for loggedBy and derive actor from session."
+  - type: annotation
+    name: "@Transactional"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1356"
+    target: "WastageController.createLog"
+    must_appear_in_target: true
+    notes: "Expand transaction to include ledger and audit mutations."
+  - type: route-declaration
+    name: "Static /wastage.html page"
+    source_loc: "src/main/resources/static/wastage.html:1"
+    target: "Spring Boot static-resource handler"
+    must_appear_in_target: true
+    notes: "Current page is protected for ADMIN; selected baseline requires STAFF access too."
+runtime_config: []

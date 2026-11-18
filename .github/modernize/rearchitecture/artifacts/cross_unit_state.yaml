@@ -1,0 +1,45 @@
+flows:
+  - name: authenticated-role-session
+    medium: session
+    key: "demoRole"
+    writer:
+      unit: identity-and-staff
+      source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:146"
+    reader:
+      unit: admin-order-workflow
+      source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:773"
+    pairing: matched
+    must_preserve: true
+    must_confirm: null
+    verification_hint: "Login as ADMIN and as a customer; confirm admin route guards and customer-only order ownership use server session state."
+    notes: "The current login stores ADMIN or USER in HttpSession; the interceptor reads it for protected pages/APIs. Target adds STAFF as a database-backed role without trusting client-supplied roles."
+
+  - name: customer-account-session-identity
+    medium: session
+    key: "customerId"
+    writer:
+      unit: identity-and-staff
+      source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:369"
+    reader:
+      unit: customer-custom-orders
+      source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:829"
+    pairing: matched
+    must_preserve: true
+    must_confirm: null
+    verification_hint: "With two customer accounts, request listing/detail/image access as each customer and verify cross-customer IDs return no data."
+    notes: "Customer custom-order reads filter by requester_customer_id from the session; preserve this DB-backed ownership rule."
+
+  - name: customer-profile-session-name
+    medium: session
+    key: "customerName"
+    writer:
+      unit: identity-and-staff
+      source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:371"
+    reader:
+      unit: customer-custom-orders
+      source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1783"
+    pairing: matched
+    must_preserve: true
+    must_confirm: null
+    verification_hint: "Submit a custom request as a signed-in customer and verify the persisted requester snapshot matches the authenticated account."
+    notes: "Requester snapshot values are taken from server-side session/database identity, not from custom request form identity fields."

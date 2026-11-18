@@ -1,0 +1,49 @@
+unit: customer-custom-orders
+side_effects:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1512"
+    effect: "Creates a DB-backed custom_orders record, preserving requester snapshot and optional reference-image bytes; derives requester identity from the authenticated customer session."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1588"
+    effect: "Creates one custom_order_checkouts row with payment details, optional receipt, quoted payment amount, and submission timestamp."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1651"
+    effect: "The combined customer checkout path creates a custom order and checkout submission within the same request/transaction."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:827"
+    effect: "Returns only custom orders owned by the current customer, with published quote and payment timestamps."
+    must_preserve: true
+branches:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1525"
+    condition: "session does not resolve to a USER account"
+    behavior: "return 401 and do not persist a custom request."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1603"
+    condition: "the request is not owned by the current customer"
+    behavior: "return 404 without disclosing another customer's order."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1607"
+    condition: "no official quote has been published"
+    behavior: "return 404 with a payment-submission error; do not accept payment."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1611"
+    condition: "checkout already exists or concurrent insert violates unique order_id"
+    behavior: "return 409 and retain the original checkout."
+    must_preserve: true
+error_paths:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1559"
+    trigger: "custom-order dimensions, frame, text, or reference image fail validation"
+    outcome: "return 400 with a specific validation message and create no order row."
+    contract: "HTTP 400 JSON ApiError."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1625"
+    trigger: "payment method, terms, reference, or receipt fails checkout validation"
+    outcome: "return 400 and create no checkout row."
+    contract: "HTTP 400 JSON ApiError."
+    must_preserve: true
+concurrency:
+  model: sync
+  tx_boundary:
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1513"
+    scope: "Custom request creation and optional image persistence are transactional; customer payment submission and checkout insert are transactional. Target audit events must be inside the same transaction as the corresponding mutation."
+    isolation: "Database default; not explicitly configured."
+    must_preserve: true

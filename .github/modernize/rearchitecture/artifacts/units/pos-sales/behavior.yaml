@@ -1,0 +1,29 @@
+unit: pos-sales
+side_effects:
+  - source_loc: "src/main/resources/static/js/store.js:1151"
+    effect: "Current POS order creation, completion, payment method, and paid time are saved to styleMariaPosOrders localStorage."
+    must_preserve: false
+  - source_loc: "src/main/resources/static/js/store.js:1302"
+    effect: "Page load reads and validates the browser-local POS order list; there is no server read."
+    must_preserve: false
+branches:
+  - source_loc: "src/main/resources/static/js/store.js:1111"
+    condition: "POS page initializes"
+    behavior: "initialize empty in-memory order list, then load localStorage values if valid."
+    must_preserve: false
+  - source_loc: "src/main/resources/static/js/store.js:1423"
+    condition: "cash order is not fully paid"
+    behavior: "disable payment processing until paid amount covers the order price."
+    must_preserve: true
+  - source_loc: "src/main/resources/static/js/store.js:1430"
+    condition: "payment is processed"
+    behavior: "mark the local POS order completed, record payment method/time, and display receipt."
+    must_preserve: true
+error_paths:
+  - source_loc: "src/main/resources/static/js/store.js:1151"
+    trigger: "browser storage write fails"
+    outcome: "show local error feedback; no server copy exists."
+    contract: "Client-only error display."
+    must_preserve: false
+concurrency:
+  model: sync

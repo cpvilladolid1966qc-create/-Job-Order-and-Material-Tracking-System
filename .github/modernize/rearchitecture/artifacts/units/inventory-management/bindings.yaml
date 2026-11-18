@@ -1,0 +1,21 @@
+unit: inventory-management
+bindings:
+  - type: route-declaration
+    name: "Static /inventory.html page"
+    source_loc: "src/main/resources/static/inventory.html:1"
+    target: "Spring Boot static-resource handler"
+    must_appear_in_target: true
+    notes: "Page access currently requires ADMIN through DemoRoleInterceptor's protected-page map."
+  - type: annotation
+    name: "Inventory API does not exist yet"
+    source_loc: "src/main/resources/static/inventory.html:114"
+    target: "Planned server-side inventory catalog and movement APIs"
+    must_appear_in_target: true
+    notes: "The empty table and DOM-only stock-in/reversal controls must be wired to authenticated APIs; the concrete interface is defined in architecture_index.md."
+  - type: convention
+    name: "Shared page bootstrap / store.js"
+    source_loc: "src/main/resources/static/js/store.js:707"
+    target: "Inventory search, filters, stock action UI"
+    must_appear_in_target: true
+    notes: "The shared script initializes only when materials-body exists; split the feature handler only if needed to avoid changing unrelated pages."
+runtime_config: []

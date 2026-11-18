@@ -1,0 +1,33 @@
+unit: customer-custom-orders
+bindings:
+  - type: annotation
+    name: "@RestController @RequestMapping(\"/api/v1/customer/custom-orders\")"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:817"
+    target: "CustomerCustomOrderController"
+    must_appear_in_target: true
+    notes: "Customer-owned list/detail/reference image routes."
+  - type: route-declaration
+    name: "GET /api/v1/customer/custom-orders[/{requestId}[/reference-image]]"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:827"
+    target: "CustomerCustomOrderController"
+    must_appear_in_target: true
+    notes: "Each query must constrain requester_customer_id from HttpSession."
+  - type: annotation
+    name: "@RestController @RequestMapping({\"/api/custom-orders\", \"/api/v1/custom-orders\"})"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1490"
+    target: "CustomOrderController"
+    must_appear_in_target: true
+    notes: "Preserve legacy route alias and versioned customer paths."
+  - type: route-declaration
+    name: "GET /api/v1/custom-orders/quote; POST /api/v1/custom-orders; POST /api/v1/custom-orders/{orderId}/checkout; POST /api/v1/custom-orders/checkout"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1507"
+    target: "CustomOrderController"
+    must_appear_in_target: true
+    notes: "Multipart forms are used for reference images and payment receipt; the combined checkout route is currently used by customize-order.js."
+  - type: annotation
+    name: "@Transactional"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1513"
+    target: "CustomOrderController.submitRequest and submitCheckout"
+    must_appear_in_target: true
+    notes: "Audit inserts added to these workflows must use the same transaction."
+runtime_config: []

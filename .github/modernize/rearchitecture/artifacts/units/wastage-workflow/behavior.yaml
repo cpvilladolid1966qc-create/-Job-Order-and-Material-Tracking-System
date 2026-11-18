@@ -1,0 +1,38 @@
+unit: wastage-workflow
+side_effects:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1355"
+    effect: "Inserts a wastage_logs row with server-generated ID/time and calculated material/labour/total impact."
+    must_preserve: true
+  - source_loc: "src/main/resources/static/js/store.js:862"
+    effect: "Wastage page loads persisted records from GET /api/v1/wastage."
+    must_preserve: true
+  - source_loc: "src/main/resources/static/js/store.js:921"
+    effect: "Wastage form submits a JSON request to POST /api/v1/wastage and reloads the list on success."
+    must_preserve: true
+branches:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1421"
+    condition: "request lacks required fields, supported material, positive quantity, or date/flags"
+    behavior: "return 400 with a validation message before inserting the log."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1360"
+    condition: "request passes validation"
+    behavior: "calculate costs using current fixed material rates and labour charge, then persist log."
+    must_preserve: true
+error_paths:
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1421"
+    trigger: "invalid wastage request"
+    outcome: "HTTP 400 JSON ApiError."
+    contract: "HTTP 400 with message."
+    must_preserve: true
+  - source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1327"
+    trigger: "caller is not in the currently allowed admin session"
+    outcome: "current interceptor denies the request using its page-style redirect behavior."
+    contract: "Current authorization response is a redirect; target APIs must use explicit 401/403."
+    must_preserve: false
+concurrency:
+  model: sync
+  tx_boundary:
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:1356"
+    scope: "Current wastage_log insert is transactional. Target must include the stock movement and audit event in this same transaction; inventory balance update must not commit separately."
+    isolation: "Database default; not explicitly configured."
+    must_preserve: true

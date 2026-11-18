@@ -1,0 +1,57 @@
+unit: identity-and-staff
+bindings:
+  - type: annotation
+    name: "@Controller"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:81"
+    target: "DemoAuthController"
+    must_appear_in_target: true
+    notes: "Spring component scanning discovers the package-private MVC auth controller."
+  - type: route-declaration
+    name: "POST /login, POST /signup, POST /forgot-password, POST /reset-password, GET /logout"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:99"
+    target: "DemoAuthController"
+    must_appear_in_target: true
+    notes: "Existing customer/admin login/session paths; add staff login without dropping configured admin bootstrap."
+  - type: route-declaration
+    name: "GET/PUT /api/v1/customer/profile and GET /api/v1/customer/profile/photo"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:171"
+    target: "DemoAuthController"
+    must_appear_in_target: true
+    notes: "Customer profile endpoints depend on USER role and customerId session identity."
+  - type: filter
+    name: "DemoRoleInterceptor"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:735"
+    target: "Protected pages and admin custom-order/wastage APIs"
+    must_appear_in_target: true
+    notes: "Current exact-path role map must be expanded to cover new staff/admin APIs; API failures should use explicit status/error responses rather than redirects."
+  - type: listener
+    name: "CustomerAccountSchemaMigration / CustomOrderSchemaMigration"
+    source_loc: "src/main/java/com/job_order_and_material_tracking_system/stylemaria/StylemariaApplication.java:608"
+    target: "Existing customer/order schema compatibility"
+    must_appear_in_target: true
+    notes: "Preserve existing DB rows and startup compatibility; coordinate new DDL with DBA."
+  - type: route-declaration
+    name: "Static /reports.html staff-management dialog"
+    source_loc: "src/main/resources/static/reports.html:123"
+    target: "Admin staff directory and invitation UI"
+    must_appear_in_target: true
+    notes: "The current staff directory/editor lives on Reports, not the dashboard page; its state is handled by shared store.js."
+runtime_config:
+  - key: "app.admin.email / ADMIN_EMAIL"
+    source_loc: "src/main/resources/application.properties:2"
+    source: env
+    default_value: "application currently has a configured fallback email; do not record its value here."
+    must_appear_in_target: true
+    notes: "Keep admin startup/login configurable."
+  - key: "app.admin.password / ADMIN_PASSWORD"
+    source_loc: "src/main/resources/application.properties:3"
+    source: env
+    default_value: "empty"
+    must_appear_in_target: true
+    notes: "Current fallback is empty; never introduce a source-controlled password."
+  - key: "spring.mail.* / SMTP_*"
+    source_loc: "src/main/resources/application.properties:10"
+    source: env
+    default_value: "application defaults; SMTP credentials are empty unless configured"
+    must_appear_in_target: true
+    notes: "Staff invitation emails require working SMTP credentials/host and public URL."

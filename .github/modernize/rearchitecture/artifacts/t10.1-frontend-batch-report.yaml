@@ -1,0 +1,58 @@
+batch_id: "t10.1"
+completed_tasks:
+  - "t10.1"
+blocked_tasks: []
+files_changed:
+  t10.1:
+    - file: "src/main/resources/static/wastage.html"
+      change_type: "modified"
+      description: "Replaced static material/unit choices with catalog-backed controls and explicit loading state."
+    - file: "src/main/resources/static/js/store.js"
+      change_type: "modified"
+      description: "Loads active materials, reports empty/error states, submits materialId and canonical unit, and blocks fractions for EA."
+    - file: "src/main/resources/static/inventory.html"
+      change_type: "modified"
+      description: "Routes staff-visible Wastage navigation to /wastage.html."
+    - file: "src/test/java/com/job_order_and_material_tracking_system/stylemaria/OrderPaymentWastageFlowIntegrationTests.java"
+      change_type: "modified"
+      description: "Adds authenticated/active-catalog and canonical-ID wastage workflow assertions."
+upstream_artifacts_consumed:
+  t10.1:
+    - artifact: ".github/modernize/rearchitecture/artifacts/t5-backend.md"
+      used_for: "Secured active-material endpoint, wastage request fields, and stock-deduction contract."
+    - artifact: ".github/modernize/rearchitecture/artifacts/t6-frontend.md"
+      used_for: "Shared API-module conventions and existing wastage/navigation behavior."
+evidence_mapping:
+  t10.1:
+    - upstream: "t5-backend.md#Behavior and Security Boundaries"
+      output: "static/js/store.js catalog-backed selection and OrderPaymentWastageFlowIntegrationTests"
+      evidence: "full Maven suite; test asserts authenticated active-only catalog and ID/unit-based stock deduction."
+    - upstream: "t6-frontend.md#Behavior Boundaries"
+      output: "static/inventory.html"
+      evidence: "static navigation assertion confirms /wastage.html."
+traceability:
+  - requirement: "Use active inventory catalog materials and matching canonical units for wastage."
+    plan_item: "User-reported remediation"
+    task: "t10.1"
+    files:
+      - "src/main/resources/static/wastage.html"
+      - "src/main/resources/static/js/store.js"
+      - "src/test/java/com/job_order_and_material_tracking_system/stylemaria/OrderPaymentWastageFlowIntegrationTests.java"
+    status: "completed"
+  - requirement: "Make the staff-visible inventory Wastage link accessible."
+    plan_item: "User-reported remediation"
+    task: "t10.1"
+    files:
+      - "src/main/resources/static/inventory.html"
+    status: "completed"
+protocol_violation: false
+errors: []
+warnings:
+  - "Node.js is unavailable; browser-side JavaScript execution was not performed."
+test_results:
+  t10.1:
+    command: ".\\mvnw.cmd test"
+    passed: 64
+    failed: 0
+    skipped: 0
+    failures: []

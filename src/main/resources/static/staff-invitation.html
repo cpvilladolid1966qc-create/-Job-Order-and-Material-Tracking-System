@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#50512a">
+    <title>Accept Staff Invitation | Style Maria</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/api-client.js" defer></script>
+    <script src="/js/staff-invitation.js" defer></script>
+</head>
+<body class="staff-invitation-page">
+<main class="staff-invitation-card" aria-labelledby="invitation-title">
+    <a class="workshop-brand" href="/" aria-label="Style Maria home">
+        <span class="workshop-logo">SM</span>
+        <span class="workshop-brand-name">STYLE MARIA</span>
+    </a>
+    <h1 id="invitation-title">Accept your staff invitation</h1>
+    <p>Set a password for your staff account. Invitations expire after 24 hours and can only be used once.</p>
+    <form id="staff-invitation-form">
+        <label for="invitation-password">New password</label>
+        <input id="invitation-password" name="password" type="password" minlength="12" maxlength="128"
+               autocomplete="new-password" required>
+        <label for="invitation-password-confirm">Confirm password</label>
+        <input id="invitation-password-confirm" name="passwordConfirmation" type="password" minlength="12"
+               maxlength="128" autocomplete="new-password" required>
+        <button class="dashboard-button" id="accept-invitation" type="submit">Set password</button>
+    </form>
+    <p id="staff-invitation-feedback" class="auth-feedback" role="status" aria-live="polite"></p>
+    <a id="staff-login-link" href="/login" hidden>Continue to sign in</a>
+</main>
+</body>
+</html>

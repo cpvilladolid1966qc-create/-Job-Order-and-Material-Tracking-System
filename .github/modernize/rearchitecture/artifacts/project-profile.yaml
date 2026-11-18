@@ -1,0 +1,39 @@
+﻿project:
+  scope_path: "."
+  loc: 5556
+  languages: [Java, JavaScript]
+  git: false
+  structure:
+    src: "Spring Boot application and static HTML/JavaScript pages"
+    target: "Existing Maven build output (excluded from source sizing)"
+  notes: "Single-module Spring Boot application with static customer/admin pages and an existing MySQL setup. User confirms prior custom-order USER session ownership behavior and 39 Maven tests; preserve it. No demo rows or payment gateway."
+assessment:
+  change_type: upgrade
+  rationale: |
+    This is a brownfield functionalization of the existing Spring Boot and static HTML/JavaScript application without a stack migration or module extraction. Preserve the established MySQL setup, UI patterns, existing authorization behavior, and custom-order quote workflow.
+  transformations:
+    - fromStack: Spring Boot + static HTML/JavaScript
+      fromStackVersion: existing
+      toStack: Spring Boot + static HTML/JavaScript
+      toStackVersion: existing
+  grouping_needed: false
+  deep_planning: false
+progress_sync:
+  run_id: 98f98de7-02a8-48d7-b956-0b20aad98f9d
+  grouping_mode: none
+  execution_mode: all-at-once
+  plan_start_time: "2026-10-26T16:41:28Z"
+  plan_completed_time: "2026-11-04T13:43:15Z"
+  execution_start_time: "2026-11-04T13:44:24Z"
+  execution_completed_time: null
+  validation_start_time: "2026-11-04T15:49:39Z"
+  validation_completed_time: null
+  total_phases: 6
+  completed_phases: 4
+  total_modules: 1
+  completed_modules: 0
+  total_tasks: 12
+  completed_tasks: 10
+  total_commits: 0
+  build_verified: false
+  test_verified: false

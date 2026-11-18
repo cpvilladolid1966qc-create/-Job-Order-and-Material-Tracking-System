@@ -1,0 +1,512 @@
+{
+  "schema": "clarification-questions/v1",
+  "generated_at": "2026-10-26T16:41:28Z",
+  "user_input": "Implement the user-confirmed full-site functionalization in the existing D:\\stylemaria Spring Boot + static HTML/JS project. User confirmed scope: all existing customer and admin pages, with POS payments recorded manually (cash or GCash/Maya reference), no payment gateway. Preserve the existing MySQL database setup, current framework/UI patterns, and prior intentional behavior (customer custom order is a request for admin quote; admin publishes quote in-app, not email). No fabricated/demo rows. Existing custom-order submissions are now required to have USER session, attach requester_customer_id/name/email/phone/address, customer pages home/customize/see-all/track are role-protected, and order checkout ownership is checked; this work passed 39 Maven tests. Inspect and continue from that state; avoid reverting it.\n\nBounded objective: make all existing pages actually use persistent backend data rather than localStorage/static demo behavior, covering dashboard/custom request queue, customer account order ownership and quote/tracking, inventory stock/material actions, wastage logs, POS pending orders/manual payment records, reports/staff data, and Auto-BOM generation/quote persistence. Implement only behavior supportable by current UI; for any module whose business rules cannot safely be inferred, keep the UI explicit and avoid false success. Use MySQL schema/idempotent migrations and server-side authorization/validation; never trust browser-calculated amounts/ownership for persisted records. Update directly related docs and tests. Run focused tests then full .\\mvnw.cmd test and report exact remaining gaps. Stop if a required business decision/credential is absent; report the specific blocker rather than fabricating behavior. Do not create or commit a git commit.",
+  "title": "Full-site functionalization",
+  "assessment_snapshot": {
+    "intro": "The existing project is a single-module Spring Boot application with static HTML/JavaScript pages and an established MySQL setup:",
+    "bullets": [
+      "The requested scope covers existing customer and administrator pages, including order quotes/tracking, inventory, wastage, POS manual payments, reports/staff, and Auto-BOM.",
+      "Preserve current framework and UI patterns, existing customer authentication/ownership checks, and custom-order in-app quote behavior.",
+      "No gateway, demo data, or git commit; existing 39 Maven tests must remain passing."
+    ]
+  },
+  "proposed_outcome": "Make the existing customer/admin pages use validated, authorized persistent MySQL-backed data while preserving the current Spring Boot and static UI patterns. Keep unsupported business rules explicit instead of reporting false success, add idempotent schema changes and relevant tests/docs, and verify with focused and full Maven tests.",
+  "scope": [
+    "frontend",
+    "backend",
+    "generic"
+  ],
+  "status": "awaiting_answers",
+  "questions": [
+    {
+      "id": "F1",
+      "kit": "frontend",
+      "field": "target.framework",
+      "title": "Frontend framework",
+      "question": "Confirm the frontend remains the existing static HTML/JavaScript implementation; no framework migration is in scope.",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "Keep existing static HTML/JavaScript",
+      "default": null,
+      "prefilled": true,
+      "prefilled_value": "Keep existing static HTML/JavaScript",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Keep existing static HTML/JavaScript",
+          "label": "Keep existing static HTML/JavaScript"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "F2",
+      "kit": "frontend",
+      "field": "target.component_library",
+      "title": "UI component library",
+      "question": "Confirm existing UI components and styling patterns should be retained without introducing a new component library.",
+      "importance": "required",
+      "impact": 4,
+      "recommended": "Preserve current UI patterns; do not add a component library",
+      "default": null,
+      "prefilled": true,
+      "prefilled_value": "Preserve current UI patterns; do not add a component library",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Preserve current UI patterns; do not add a component library",
+          "label": "Preserve current UI patterns; do not add a component library"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "F3",
+      "kit": "frontend",
+      "field": "visual.screenshots",
+      "title": "Current UI references",
+      "question": "Are screenshots, a staging URL, or screen recordings available to use as a reference? If not, confirm that this work is functional wiring only and should preserve the current UI without visual redesign.",
+      "importance": "required",
+      "impact": 4,
+      "recommended": null,
+      "default": null,
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": null,
+      "depends_on": null,
+      "type": "text",
+      "options": []
+    },
+    {
+      "id": "F4",
+      "kit": "frontend",
+      "field": "visual.design_system",
+      "title": "Design system",
+      "question": "Confirm the current styles/design tokens are the source of truth and should be preserved; no visual redesign is intended.",
+      "importance": "required",
+      "impact": 4,
+      "recommended": null,
+      "default": "match existing UI using current styles and tokens",
+      "prefilled": true,
+      "prefilled_value": "Preserve current framework/UI patterns and styles; functional wiring only",
+      "answer": null,
+      "depends_on": null,
+      "type": "text",
+      "options": []
+    },
+    {
+      "id": "F5",
+      "kit": "frontend",
+      "field": "compliance.accessibility",
+      "title": "Accessibility target",
+      "question": "Which accessibility target should apply to pages touched by this functionalization?",
+      "importance": "recommended",
+      "impact": 3,
+      "recommended": "WCAG 2.1 AA",
+      "default": "WCAG 2.1 AA",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "WCAG 2.1 AA",
+          "label": "WCAG 2.1 AA"
+        },
+        {
+          "value": "Keep current baseline",
+          "label": "Keep current baseline"
+        },
+        {
+          "value": "None required",
+          "label": "None required"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "F6",
+      "kit": "frontend",
+      "field": "compatibility.browsers",
+      "title": "Browser targets",
+      "question": "Confirm supported browsers/runtime targets.",
+      "importance": "recommended",
+      "impact": 2,
+      "recommended": "Modern evergreen browsers",
+      "default": "modern evergreen (Chrome, Firefox, Safari, Edge — latest 2 major versions)",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Modern evergreen browsers",
+          "label": "Modern evergreen browsers"
+        },
+        {
+          "value": "Preserve existing targets",
+          "label": "Preserve existing targets"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "F7",
+      "kit": "frontend",
+      "field": "responsive.breakpoints",
+      "title": "Responsive behavior",
+      "question": "Confirm responsive behavior should preserve the existing breakpoints and layouts.",
+      "importance": "recommended",
+      "impact": 2,
+      "recommended": "Preserve current breakpoints and layouts",
+      "default": "mobile-first using existing breakpoints detected from codebase",
+      "prefilled": true,
+      "prefilled_value": "Preserve current UI patterns",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Preserve current breakpoints and layouts",
+          "label": "Preserve current breakpoints and layouts"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "F8",
+      "kit": "frontend",
+      "field": "i18n.locales",
+      "title": "Locales",
+      "question": "Which locales should remain in scope?",
+      "importance": "optional",
+      "impact": 1,
+      "recommended": "Preserve current locales",
+      "default": "preserve current locales; keep existing i18n library if present",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Preserve current locales",
+          "label": "Preserve current locales"
+        },
+        {
+          "value": "No localization changes",
+          "label": "No localization changes"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "F9",
+      "kit": "frontend",
+      "field": "state_mgmt.preference",
+      "title": "Frontend state",
+      "question": "Confirm client-side state preference.",
+      "importance": "optional",
+      "impact": 1,
+      "recommended": "Preserve existing pattern; use backend as source of truth",
+      "default": "preserve existing pattern if identifiable; otherwise recommend minimal (component state + server-state library)",
+      "prefilled": true,
+      "prefilled_value": "Replace localStorage/static demo behavior with persistent backend data while preserving current UI patterns",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Preserve existing pattern; use backend as source of truth",
+          "label": "Preserve existing pattern; use backend as source of truth"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "F10",
+      "kit": "frontend",
+      "field": "routing.preference",
+      "title": "Page navigation",
+      "question": "Confirm page routing/navigation should retain existing URLs and navigation behavior.",
+      "importance": "optional",
+      "impact": 1,
+      "recommended": "Preserve existing static page URLs and navigation",
+      "default": "use the de-facto router for the chosen target framework",
+      "prefilled": true,
+      "prefilled_value": "Preserve existing framework/UI patterns",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Preserve existing static page URLs and navigation",
+          "label": "Preserve existing static page URLs and navigation"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B1",
+      "kit": "backend",
+      "field": "target.framework",
+      "title": "Backend framework",
+      "question": "Confirm the existing Spring Boot backend and its current version are retained without an upgrade.",
+      "importance": "required",
+      "impact": 5,
+      "recommended": "Keep existing Spring Boot version",
+      "default": null,
+      "prefilled": true,
+      "prefilled_value": "Existing Spring Boot version; preserve current framework",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Keep existing Spring Boot version",
+          "label": "Keep existing Spring Boot version"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B2",
+      "kit": "backend",
+      "field": "api.contract_preservation",
+      "title": "API compatibility",
+      "question": "Confirm existing API contracts should be preserved where present, with any new page-support endpoints added compatibly.",
+      "importance": "required",
+      "impact": 4,
+      "recommended": "must preserve",
+      "default": "must preserve",
+      "prefilled": true,
+      "prefilled_value": "Preserve current behavior/contracts; implement support for existing pages without reverting approved behavior",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "must preserve",
+          "label": "Must preserve existing contracts; add new behavior compatibly"
+        },
+        {
+          "value": "can break with versioning",
+          "label": "Breaking changes only with versioning"
+        },
+        {
+          "value": "can break",
+          "label": "Breaking changes are acceptable"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B3",
+      "kit": "backend",
+      "field": "data.migration_strategy",
+      "title": "Database strategy",
+      "question": "Confirm the existing MySQL database setup should be retained and changed only through idempotent schema/migration steps.",
+      "importance": "required",
+      "impact": 4,
+      "recommended": "in-place",
+      "default": "TBD / assess in research phase",
+      "prefilled": true,
+      "prefilled_value": "Preserve existing MySQL setup; use schema/idempotent migrations",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "in-place",
+          "label": "In-place changes to existing MySQL database"
+        },
+        {
+          "value": "no migration",
+          "label": "Do not change the schema"
+        },
+        {
+          "value": "TBD / assess in research phase",
+          "label": "Assess further before schema changes"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B4",
+      "kit": "backend",
+      "field": "auth.framework",
+      "title": "Authentication and authorization",
+      "question": "Confirm existing authentication behavior should be preserved and server-side roles/ownership enforced for new persisted operations.",
+      "importance": "recommended",
+      "impact": 4,
+      "recommended": "Preserve existing auth mechanism and enforce server-side authorization",
+      "default": "preserve existing auth mechanism; detect from codebase",
+      "prefilled": true,
+      "prefilled_value": "USER session required for custom orders; protect customer pages and enforce checkout ownership; server-side auth/validation",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Preserve existing auth mechanism and enforce server-side authorization",
+          "label": "Preserve existing auth mechanism and enforce server-side authorization"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "B5",
+      "kit": "backend",
+      "field": "nfr.sla",
+      "title": "Service levels",
+      "question": "Confirm service levels should match the current production baseline without regression.",
+      "importance": "recommended",
+      "impact": 1,
+      "recommended": "Match current baseline",
+      "default": "match current production baseline; no regression",
+      "prefilled": false,
+      "prefilled_value": null,
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "Match current baseline",
+          "label": "Match current production baseline; no regression"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G1",
+      "kit": "generic",
+      "field": "success.definition",
+      "title": "Definition of done",
+      "question": "Confirm the stated full-site functionality, security, tests, and explicit gap reporting define success.",
+      "importance": "required",
+      "impact": 5,
+      "recommended": null,
+      "default": "feature parity with the current system; all existing user-facing behaviors preserved",
+      "prefilled": true,
+      "prefilled_value": "Existing customer and admin pages use persistent backend data for supportable workflows, with server-side authorization/validation, idempotent MySQL schema, directly related docs/tests, focused plus full Maven tests, and exact remaining gaps reported; no demo rows or payment gateway.",
+      "answer": null,
+      "depends_on": null,
+      "type": "text",
+      "options": []
+    },
+    {
+      "id": "G2",
+      "kit": "generic",
+      "field": "out_of_scope",
+      "title": "Out-of-scope items",
+      "question": "Confirm explicit exclusions.",
+      "importance": "recommended",
+      "impact": 2,
+      "recommended": "No payment gateway; no demo rows; no unrelated stack/UI redesign; no git commit",
+      "default": "no explicit exclusions; agent will infer from project structure",
+      "prefilled": true,
+      "prefilled_value": "No payment gateway, fabricated/demo rows, framework/UI pattern changes, or git commit",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "No payment gateway; no demo rows; no unrelated stack/UI redesign; no git commit",
+          "label": "No payment gateway; no demo rows; no unrelated stack/UI redesign; no git commit"
+        },
+        {
+          "value": "Other",
+          "label": "Other"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G3",
+      "kit": "generic",
+      "field": "existing_tests.posture",
+      "title": "Existing tests",
+      "question": "Confirm all existing tests must continue to pass and the full Maven test suite should be run.",
+      "importance": "recommended",
+      "impact": 3,
+      "recommended": "must pass",
+      "default": "must pass",
+      "prefilled": true,
+      "prefilled_value": "Existing work passed 39 Maven tests; run focused tests and full .\\mvnw.cmd test without regressions",
+      "answer": null,
+      "depends_on": null,
+      "options": [
+        {
+          "value": "must pass",
+          "label": "Must pass"
+        },
+        {
+          "value": "can rewrite",
+          "label": "Can rewrite equivalently"
+        },
+        {
+          "value": "partial",
+          "label": "Partial"
+        }
+      ],
+      "allow_other": true,
+      "type": "single_select"
+    },
+    {
+      "id": "G5",
+      "kit": "generic",
+      "field": "constraints.additional",
+      "title": "Additional constraints",
+      "question": "Additional constraints, business rules, credentials, or required exclusions not covered above.",
+      "importance": "optional",
+      "impact": 3,
+      "recommended": null,
+      "default": "None beyond the decisions listed in this specification.",
+      "prefilled": true,
+      "prefilled_value": "POS payments are recorded manually as cash or GCash/Maya reference; no payment gateway. Preserve the custom-order request-for-admin-quote flow; admin publishes quote in-app, not email. Existing custom-order submissions require USER session, attach requester_customer_id/name/email/phone/address; home/customize/see-all/track pages are role-protected; order checkout verifies ownership. Do not revert the prior change. No fabricated/demo rows. Only implement business behavior supportable by existing UI; if required business decisions or credentials are absent, stop and report the blocker rather than fabricating behavior. Preserve MySQL setup and current Spring Boot/static HTML/JS UI patterns. Run focused tests then full .\\mvnw.cmd test. Do not create or commit a git commit.",
+      "answer": null,
+      "depends_on": null,
+      "type": "text",
+      "options": []
+    }
+  ]
+}

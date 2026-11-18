@@ -1,0 +1,15 @@
+unit: pos-sales
+bindings:
+  - type: route-declaration
+    name: "Static /pos.html page"
+    source_loc: "src/main/resources/static/pos.html:1"
+    target: "Spring Boot static-resource handler"
+    must_appear_in_target: true
+    notes: "Page is currently ADMIN-only; selected policy allows STAFF operational order/payment handling, while admin-only tasks remain restricted."
+  - type: convention
+    name: "Shared store.js POS handler"
+    source_loc: "src/main/resources/static/js/store.js:1111"
+    target: "POS order list, cart, payment, and receipt UI"
+    must_appear_in_target: true
+    notes: "Replace styleMariaPosOrders reads/writes with server calls; no existing backend route exists."
+runtime_config: []
