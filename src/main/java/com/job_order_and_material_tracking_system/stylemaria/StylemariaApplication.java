@@ -803,7 +803,7 @@ class DemoAuthController {
         return "redirect:/?passwordReset";
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logout(HttpSession session) {
         if (session != null) {
             session.invalidate();
@@ -1087,6 +1087,11 @@ class DemoRoleInterceptor implements HandlerInterceptor {
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) throws IOException {
+        if (!isSafeMethod(request.getMethod()) && !isSameOriginMutation(request)) {
+            response.sendError(HttpStatus.FORBIDDEN.value(), "Cross-origin request rejected.");
+            return false;
+        }
+
         String path = request.getRequestURI().substring(request.getContextPath().length());
         Set<String> requiredRoles = requiredRoles(path, request.getMethod());
         if (requiredRoles.isEmpty()) {
@@ -1123,6 +1128,58 @@ class DemoRoleInterceptor implements HandlerInterceptor {
             response.sendRedirect("/?error=unauthorized");
         }
         return false;
+    }
+
+    private boolean isSafeMethod(String method) {
+        return "GET".equals(method) || "HEAD".equals(method) || "OPTIONS".equals(method);
+    }
+
+    private boolean isSameOriginMutation(HttpServletRequest request) {
+        String fetchSite = request.getHeader("Sec-Fetch-Site");
+        if ("cross-site".equalsIgnoreCase(fetchSite) || "same-site".equalsIgnoreCase(fetchSite)) {
+            return false;
+        }
+
+        String origin = request.getHeader("Origin");
+        if (origin == null || origin.isBlank()) {
+            return fetchSite == null || "same-origin".equalsIgnoreCase(fetchSite);
+        }
+        if ("null".equalsIgnoreCase(origin)) {
+            return false;
+        }
+
+        try {
+            java.net.URI parsedOrigin = java.net.URI.create(origin);
+            String scheme = parsedOrigin.getScheme();
+            String host = parsedOrigin.getHost();
+            int originPort = effectivePort(scheme, parsedOrigin.getPort());
+            int requestPort = effectivePort(request.getScheme(), request.getServerPort());
+            return scheme != null
+                    && scheme.equalsIgnoreCase(request.getScheme())
+                    && host != null
+                    && host.equalsIgnoreCase(request.getServerName())
+                    && originPort == requestPort
+                    && parsedOrigin.getUserInfo() == null
+                    && parsedOrigin.getRawQuery() == null
+                    && parsedOrigin.getRawFragment() == null
+                    && (parsedOrigin.getRawPath() == null || parsedOrigin.getRawPath().isEmpty()
+                            || "/".equals(parsedOrigin.getRawPath()));
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
+    }
+
+    private int effectivePort(String scheme, int port) {
+        if (port >= 0) {
+            return port;
+        }
+        if ("https".equalsIgnoreCase(scheme)) {
+            return 443;
+        }
+        if ("http".equalsIgnoreCase(scheme)) {
+            return 80;
+        }
+        return -1;
     }
 
     private boolean isActiveStaff(HttpSession session) {
@@ -1198,7 +1255,7 @@ class DemoWebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new DemoRoleInterceptor(jdbcTemplate))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/", "/index.html", "/login", "/logout", "/css/**", "/js/**");
+                .excludePathPatterns("/", "/index.html", "/css/**", "/js/**");
     }
 }
 
